@@ -5,6 +5,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@src/*": ["src/*"],
+      "@assets/*": ["src/assets/*"],
       "@fonts/*": ["src/fonts/*"],
       "@components/*": ["src/components/*"],
       "@ui/*": ["src/components/ui/*"],
