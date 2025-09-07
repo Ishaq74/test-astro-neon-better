@@ -1,7 +1,7 @@
 import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_ILB7gN1T.mjs';
 import 'kleur/colors';
-import { b as $$Layout } from '../chunks/Card_Cp0hndOh.mjs';
-import { a as $$QueryLoop } from '../chunks/QueryLoop_CLzrzhf2.mjs';
+import { b as $$Layout } from '../chunks/Card_Diwi7u9N.mjs';
+import { a as $$QueryLoop } from '../chunks/QueryLoop_DIFe0P7S.mjs';
 import { $ as $$Section } from '../chunks/Section_D3wqhrx4.mjs';
 export { renderers } from '../renderers.mjs';
 

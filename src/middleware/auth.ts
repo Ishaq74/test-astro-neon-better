@@ -23,7 +23,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       }
       
       // Check if user has admin role
-      if (session.user.role !== 'admin') {
+      if ((session.user as any).role !== 'admin') {
         return Response.redirect('/login');
       }
       

@@ -21,11 +21,11 @@ if (!isDatabaseAvailable()) {
   }
 }
 
-export const auth = betterAuth({
-  database: prisma ? prismaAdapter(prisma, { provider: "postgresql" }) : undefined,
+// Create auth configuration with conditional database adapter
+const authConfig: any = {
   emailAndPassword: {
     enabled: true,
-    sendResetPassword: async ({ user, url, token }, request) => {
+    sendResetPassword: async ({ user, url, token }: any, request: any) => {
       if (!isSMTPConfigured()) {
         console.warn('⚠️ SMTP not configured, skipping password reset email');
         return;
@@ -56,7 +56,7 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async ({ user, url, token }: any, request: any) => {
       if (!isSMTPConfigured()) {
         console.warn('⚠️ SMTP not configured, skipping verification email');
         return;
@@ -99,4 +99,11 @@ export const auth = betterAuth({
       bannedUserMessage: "Vous avez été banni de cette application. Contactez le support si besoin."
     })
   ]
-});
+};
+
+// Only add database adapter if database is available
+if (prisma) {
+  authConfig.database = prismaAdapter(prisma, { provider: "postgresql" });
+}
+
+export const auth = betterAuth(authConfig);

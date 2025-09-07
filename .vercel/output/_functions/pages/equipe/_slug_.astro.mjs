@@ -1,10 +1,10 @@
 import { e as createComponent, f as createAstro, k as renderComponent, r as renderTemplate } from '../../chunks/astro/server_ILB7gN1T.mjs';
 import 'kleur/colors';
-import { b as $$Layout } from '../../chunks/Card_Cp0hndOh.mjs';
+import { b as $$Layout } from '../../chunks/Card_Diwi7u9N.mjs';
 import { $ as $$Section } from '../../chunks/Section_D3wqhrx4.mjs';
-import { $ as $$Heading, a as $$Text } from '../../chunks/Text_DGm8vDJb.mjs';
+import { $ as $$Heading, a as $$Text } from '../../chunks/Text_DDtzxLq5.mjs';
 import { $ as $$Breadcrumb } from '../../chunks/Breadcrumb_CnqQtINo.mjs';
-import { c as contentLoader, $ as $$TeamCard, a as $$QueryLoop } from '../../chunks/QueryLoop_CLzrzhf2.mjs';
+import { c as contentLoader, $ as $$TeamCard, a as $$QueryLoop } from '../../chunks/QueryLoop_DIFe0P7S.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const $$Astro = createAstro();
