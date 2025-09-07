@@ -1,0 +1,72 @@
+{
+  "$ref": "#/definitions/services",
+  "definitions": {
+    "services": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "nom": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "prix": {
+          "type": "number"
+        },
+        "image": {
+          "type": "string"
+        },
+        "imageAlt": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "categorie": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "string"
+        },
+        "duree": {
+          "type": "string"
+        },
+        "durationMinutes": {
+          "type": "number"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "number"
+        },
+        "isFeatured": {
+          "type": "number"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "nom",
+        "prix",
+        "slug"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

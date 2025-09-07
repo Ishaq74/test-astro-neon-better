@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { isSMTPConfigured, shouldGracefullyDegrade } from './env-validation';
 
 // Configuration SMTP - Production ready
 const smtpConfig = {
@@ -298,6 +299,25 @@ export async function sendEmail(options: EmailOptions): Promise<SmtpTestResult> 
   const timestamp = new Date();
   
   try {
+    // Check if SMTP is configured
+    if (!isSMTPConfigured()) {
+      const message = 'SMTP not configured';
+      const details = 'Email sending is not available - SMTP configuration missing';
+      
+      if (shouldGracefullyDegrade()) {
+        console.warn(`⚠️ ${message}: ${details}`);
+        return {
+          success: false,
+          message,
+          detailedMessage: details,
+          errorCode: 'SMTP_NOT_CONFIGURED',
+          timestamp
+        };
+      }
+      
+      throw new Error(details);
+    }
+    
     // Validation des options
     const validation = validateEmailOptions(options);
     if (!validation.isValid) {

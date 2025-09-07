@@ -1,0 +1,57 @@
+{
+  "$ref": "#/definitions/galerie",
+  "definitions": {
+    "galerie": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "alt": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "uploadedBy": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "global": {
+          "type": "number"
+        },
+        "servicesGlobal": {
+          "type": "number"
+        },
+        "formationsGlobal": {
+          "type": "number"
+        },
+        "serviceId": {
+          "type": "number"
+        },
+        "formationId": {
+          "type": "number"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "imageUrl",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

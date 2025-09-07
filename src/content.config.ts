@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { PrismaClient } from "@prisma/client";
+import { isDatabaseAvailable, shouldGracefullyDegrade } from "./lib/env-validation";
 
 // Définition des schémas de collections pour Astro
 export const collections = {
@@ -246,8 +247,25 @@ export const collections = {
 let prisma: PrismaClient | undefined;
 
 export function getPrismaClient() {
+  if (!isDatabaseAvailable()) {
+    if (shouldGracefullyDegrade()) {
+      console.warn('⚠️ Database not available, returning null client');
+      return null;
+    }
+    throw new Error('Database connection required but DATABASE_URL not available');
+  }
+  
   if (!prisma) {
-    prisma = new PrismaClient();
+    try {
+      prisma = new PrismaClient();
+    } catch (error) {
+      console.error('❌ Error creating Prisma client:', error);
+      if (shouldGracefullyDegrade()) {
+        console.warn('⚠️ Continuing without database connection');
+        return null;
+      }
+      throw error;
+    }
   }
   return prisma;
 }
@@ -271,6 +289,31 @@ function normalizeImagePath(imagePath: string): string {
   let image = imagePath;
   image = image.replace(/^\/?assets\//, '');
   return 'assets/' + image.replace(/^\//, '');
+}
+
+// Helper function to safely execute database operations
+async function safeDbOperation<T>(operation: () => Promise<T>, fallback: T, operationName: string): Promise<T> {
+  const db = getPrismaClient();
+  
+  if (!db) {
+    if (shouldGracefullyDegrade()) {
+      console.warn(`⚠️ ${operationName}: Database not available, returning fallback data`);
+      return fallback;
+    }
+    throw new Error(`Database required for ${operationName}`);
+  }
+  
+  try {
+    return await operation();
+  } catch (error) {
+    console.error(`❌ ${operationName} failed:`, error);
+    
+    if (shouldGracefullyDegrade()) {
+      console.warn(`⚠️ ${operationName}: Returning fallback data due to error`);
+      return fallback;
+    }
+    throw error;
+  }
 }
 
 // Content Loader pour Astro
@@ -612,9 +655,9 @@ export const contentLoader = {
    * @returns { data: Formation[], total: number }
    */
   async loadFormations(options: { page?: number, pageSize?: number, filters?: Record<string, any> } = {}) {
-    const db = getPrismaClient();
-    try {
-      const data = await db.formation.findMany({
+    return await safeDbOperation(async () => {
+      const db = getPrismaClient();
+      const data = await db!.formation.findMany({
         include: {
           galerie: true,
           avis: true,
@@ -652,10 +695,7 @@ export const contentLoader = {
         avis: f.avis || [],
         faq: f.faq || [],
       }));
-    } catch (error) {
-      console.error("Error loading formations:", error);
-      return [];
-    }
+    }, [], 'loadFormations');
   },
   
   // --- CRUD Services ---
@@ -1081,14 +1121,14 @@ export const contentLoader = {
   
   // Services
   async loadServices(options: { isActive?: boolean, isFeatured?: boolean, categorie?: string } = {}) {
-    const db = getPrismaClient();
-    try {
+    return await safeDbOperation(async () => {
+      const db = getPrismaClient();
       const where: any = {};
       if (options.isActive !== undefined) where.isActive = options.isActive ? 1 : 0;
       if (options.isFeatured !== undefined) where.isFeatured = options.isFeatured ? 1 : 0;
       if (options.categorie) where.categorie = options.categorie;
       
-      const data = await db.service.findMany({
+      const data = await db!.service.findMany({
         where,
         include: {
           galerie: true,
@@ -1098,28 +1138,22 @@ export const contentLoader = {
       });
       
       // Normalize tags/steps fields for each service
-  return data.map((s: any) => ({
+      return data.map((s: any) => ({
         ...s,
         tags: Array.isArray(s.tags) ? s.tags : (typeof s.tags === 'string' ? (s.tags ? JSON.parse(s.tags) : []) : []),
         steps: Array.isArray(s.steps) ? s.steps : (typeof s.steps === 'string' ? (s.steps ? JSON.parse(s.steps) : []) : []),
       }));
-    } catch (error) {
-      console.error("Error loading services:", error);
-      return [];
-    }
+    }, [], 'loadServices');
   },
 
 
   // Team
   async loadTeam(options: { isActive?: boolean } = {}) {
-    const db = getPrismaClient();
-    try {
+    return await safeDbOperation(async () => {
+      const db = getPrismaClient();
       const where = options.isActive !== undefined ? { isActive: options.isActive ? 1 : 0 } : {};
-      return await db.team.findMany({ where });
-    } catch (error) {
-      console.error("Error loading team:", error);
-      return [];
-    }
+      return await db!.team.findMany({ where });
+    }, [], 'loadTeam');
   },
 
   // Site Identity
@@ -1160,8 +1194,8 @@ export const contentLoader = {
 
   // Avis/Testimonials
   async loadAvis(options: { global?: boolean, servicesGlobal?: boolean, formationsGlobal?: boolean, serviceId?: number, formationId?: number } = {}) {
-    const db = getPrismaClient();
-    try {
+    return await safeDbOperation(async () => {
+      const db = getPrismaClient();
       const where: any = {};
       if (options.global !== undefined) where.global = options.global ? 1 : 0;
       if (options.servicesGlobal !== undefined) where.servicesGlobal = options.servicesGlobal ? 1 : 0;
@@ -1169,17 +1203,14 @@ export const contentLoader = {
       if (options.serviceId !== undefined) where.serviceId = options.serviceId;
       if (options.formationId !== undefined) where.formationId = options.formationId;
       
-      return await db.avis.findMany({ where });
-    } catch (error) {
-      console.error("Error loading avis:", error);
-      return [];
-    }
+      return await db!.avis.findMany({ where });
+    }, [], 'loadAvis');
   },
 
   // Galerie/Media
   async loadGalerie(options: { global?: boolean, servicesGlobal?: boolean, formationsGlobal?: boolean, serviceId?: number, formationId?: number } = {}) {
-    const db = getPrismaClient();
-    try {
+    return await safeDbOperation(async () => {
+      const db = getPrismaClient();
       const where: any = {};
       if (options.global !== undefined) where.global = options.global ? 1 : 0;
       if (options.servicesGlobal !== undefined) where.servicesGlobal = options.servicesGlobal ? 1 : 0;
@@ -1187,11 +1218,8 @@ export const contentLoader = {
       if (options.serviceId !== undefined) where.serviceId = options.serviceId;
       if (options.formationId !== undefined) where.formationId = options.formationId;
       
-      return await db.galerie.findMany({ where });
-    } catch (error) {
-      console.error("Error loading galerie:", error);
-      return [];
-    }
+      return await db!.galerie.findMany({ where });
+    }, [], 'loadGalerie');
   },
 
   // Méthode générique pour charger toutes les données

@@ -1,0 +1,55 @@
+{
+  "$ref": "#/definitions/team",
+  "definitions": {
+    "team": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "nom": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "bio": {
+          "type": "string"
+        },
+        "photo": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "telephone": {
+          "type": "string"
+        },
+        "linkedin": {
+          "type": "string"
+        },
+        "instagram": {
+          "type": "string"
+        },
+        "certifications": {
+          "type": "string"
+        },
+        "diplome": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "number"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "nom"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

@@ -1,0 +1,66 @@
+{
+  "$ref": "#/definitions/accounts",
+  "definitions": {
+    "accounts": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "providerAccountId": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        },
+        "accessToken": {
+          "type": "string"
+        },
+        "expiresAt": {
+          "type": "number"
+        },
+        "tokenType": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "idToken": {
+          "type": "string"
+        },
+        "sessionState": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "type",
+        "provider",
+        "providerAccountId",
+        "createdAt",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

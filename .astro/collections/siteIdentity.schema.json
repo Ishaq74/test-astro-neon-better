@@ -1,0 +1,88 @@
+{
+  "$ref": "#/definitions/siteIdentity",
+  "definitions": {
+    "siteIdentity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "nom": {
+          "type": "string"
+        },
+        "slogan": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "adresse": {
+          "type": "string"
+        },
+        "codePostal": {
+          "type": "string"
+        },
+        "ville": {
+          "type": "string"
+        },
+        "pays": {
+          "type": "string"
+        },
+        "telephone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "siteUrl": {
+          "type": "string"
+        },
+        "logo": {
+          "type": "string"
+        },
+        "facebook": {
+          "type": "string"
+        },
+        "instagram": {
+          "type": "string"
+        },
+        "linkedin": {
+          "type": "string"
+        },
+        "tiktok": {
+          "type": "string"
+        },
+        "youtube": {
+          "type": "string"
+        },
+        "mentionsLegales": {
+          "type": "string"
+        },
+        "politiqueConfidentialite": {
+          "type": "string"
+        },
+        "diplomePrincipal": {
+          "type": "string"
+        },
+        "certifications": {
+          "type": "string"
+        },
+        "horaires": {
+          "type": "string"
+        },
+        "stats": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "nom"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
