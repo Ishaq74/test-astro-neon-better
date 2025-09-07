@@ -1,0 +1,18 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Section from "@ui/Section.astro";
+import SignInForm from '@components/Auth/SignInForm.astro';
+import { getServerSession } from '@lib/auth-server';
+
+const session = await getServerSession(Astro.request);
+
+if (session?.user) {
+  return Astro.redirect("/");
+}
+---
+
+<Layout title="Connexion" description="Connectez-vous à votre compte">
+  <Section padding="xl" class="auth-section">
+      <SignInForm />
+  </Section>
+</Layout>

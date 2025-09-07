@@ -1,0 +1,64 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Section from "@ui/Section.astro";
+import Heading from "@ui/Heading.astro";
+import Text from "@ui/Text.astro";
+import Input from "@ui/Input.astro";
+import Button from "@ui/Button.astro";
+import Card from "@ui/Card.astro";
+---
+
+<Layout title="Mot de passe oublié" description="Réinitialisez votre mot de passe">
+    <Section padding="xl" class="auth-section">
+        <Card class="max-w-md mx-auto">
+            <form id="forgot-form" autocomplete="on" novalidate>
+                <Heading tag="h1" fontSize="h2" fontWeight="700" align="center">Mot de passe oublié</Heading>
+                <Text as="p" align="center" class="mb-4">Entrez votre adresse e-mail pour recevoir un lien de réinitialisation.</Text>
+                <Input id="email" name="email" type="email" label="Adresse e-mail" required autofocus class="mb-4" />
+                <div id="forgot-alert" class="mb-4" style="display:none"></div>
+                <Button id="forgot-submit" type="submit" variant="primary" size="lg" class="w-full">Réinitialiser le mot de passe</Button>
+                <div class="mt-4 text-center">
+                    <a href="/auth/connexion" class="text-sm text-primary hover:underline">Retour à la connexion</a>
+                </div>
+            </form>
+        </Card>
+    </Section>
+</Layout>
+
+<script type="module">
+import { authClient } from '../../lib/auth-client';
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('forgot-form');
+    const email = document.getElementById('email');
+    const alertDiv = document.getElementById('forgot-alert');
+    const submitBtn = document.getElementById('forgot-submit');
+    if (!form || !email || !alertDiv || !submitBtn) return;
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertDiv.style.display = 'none';
+        alertDiv.textContent = '';
+        submitBtn.disabled = true;
+        if (!email.value) {
+            alertDiv.textContent = 'Veuillez renseigner votre adresse e-mail.';
+            alertDiv.style.display = 'block';
+            email.focus();
+            submitBtn.disabled = false;
+            return;
+        }
+        try {
+            await authClient.requestPasswordReset({
+                email: email.value,
+                redirectTo: "/auth/reset-password"
+            });
+            alertDiv.textContent = 'Un email de réinitialisation a été envoyé.';
+            alertDiv.style.display = 'block';
+            alertDiv.style.color = 'green';
+        } catch (err) {
+            alertDiv.textContent = err?.message || 'Erreur lors de la demande.';
+            alertDiv.style.display = 'block';
+            alertDiv.style.color = 'red';
+        }
+        submitBtn.disabled = false;
+    });
+});
+</script>

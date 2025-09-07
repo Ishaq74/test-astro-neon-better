@@ -1,0 +1,66 @@
+---
+import Layout from "@layouts/Layout.astro";
+import QueryLoop from "@components/QueryLoop.astro";
+import Section from "@components/ui/Section.astro";
+import AnimatedSection from "@components/ui/AnimatedSection.astro";
+import HeroIndex from "@components/Banner/HeroIndex.astro";
+import DecorLine from "@components/decor/DecorLine.astro";
+import Slider from "@components/organisms/Slider.astro";
+---
+<Layout title="Accueil" description="Bienvenue sur le site de maquillage professionnel à Annecy. Découvrez nos services, formations, équipe et galerie." lang="fr">
+  <div style="position:relative; min-height:100vh;">
+    <HeroIndex />
+    <div style="position:relative; z-index:1;">
+      <AnimatedSection animation="fade-in">
+        <Section>
+          <h1>Nos Services</h1>
+          <DecorLine />
+          <QueryLoop collection="services" active={true} columns={3} gap={6} />
+        </Section>
+      </AnimatedSection>
+
+      <AnimatedSection animation="slide-up" delay={100}>
+        <Section>
+          <h2>Formations</h2>
+          <DecorLine />
+          <QueryLoop collection="formations" columns={2} gap={6} />
+        </Section>
+      </AnimatedSection>
+
+      <AnimatedSection animation="slide-left" delay={200}>
+        <Section>
+          <h2>Notre équipe</h2>
+          <DecorLine />
+          <QueryLoop collection="team" active={true} columns={3} gap={6} />
+        </Section>
+      </AnimatedSection>
+
+      <AnimatedSection animation="slide-right" delay={300}>
+        <Section>
+          <h2>Galerie</h2>
+          <DecorLine />
+          <QueryLoop collection="galerie" global={true} columns={4} gap={4} />
+        </Section>
+      </AnimatedSection>
+
+      <AnimatedSection animation="scale-in" delay={400}>
+        <Section>
+          <h2>Avis</h2>
+          <DecorLine />
+          <QueryLoop collection="avis" global={true} columns={2} gap={4} />
+        </Section>
+      </AnimatedSection>
+
+      <!-- Test Slider pour avis -->
+      <AnimatedSection animation="fade-in" delay={500}>
+        <Section>
+          <h2>Avis (Slider Test)</h2>
+          <DecorLine />
+          <Slider preset="accent" gap="1.2rem" itemMinWidth="320px">
+            <QueryLoop collection="avis" global={true} columns={2} gap={0.5} />
+          </Slider>
+        </Section>
+      </AnimatedSection>
+    </div>
+  </div>
+</Layout>

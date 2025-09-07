@@ -1,0 +1,11 @@
+---
+import Layout from "@layouts/Layout.astro";
+import QueryLoop from "@components/QueryLoop.astro";
+import Section from "@components/ui/Section.astro";
+---
+<Layout title="Galerie" description="Galerie de nos réalisations en maquillage à Annecy." lang="fr">
+  <Section>
+    <h1>Galerie</h1>
+    <QueryLoop collection="galerie" global={true} columns={4} gap={4} />
+  </Section>
+</Layout>
