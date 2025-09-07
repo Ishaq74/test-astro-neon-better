@@ -1,0 +1,44 @@
+{
+  "$ref": "#/definitions/faq",
+  "definitions": {
+    "faq": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "question": {
+          "type": "string"
+        },
+        "reponse": {
+          "type": "string"
+        },
+        "global": {
+          "type": "number"
+        },
+        "servicesGlobal": {
+          "type": "number"
+        },
+        "formationsGlobal": {
+          "type": "number"
+        },
+        "serviceId": {
+          "type": "number"
+        },
+        "formationId": {
+          "type": "number"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "reponse"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

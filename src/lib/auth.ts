@@ -5,17 +5,32 @@ import { prisma } from "./prisma";
 import { sendEmail } from "./smtp";
 import { admin as adminPlugin } from "better-auth/plugins";
 import { ac, admin, user, myCustomRole } from "./permissions";
+import { isDatabaseAvailable, shouldGracefullyDegrade, isSMTPConfigured } from "./env-validation";
 
 interface AuthUser {
   email: string;
   name?: string | null;
 }
 
-export const auth = betterAuth({
-  database: prismaAdapter(prisma, { provider: "postgresql" }),
+// Check if auth can be properly initialized
+if (!isDatabaseAvailable()) {
+  if (shouldGracefullyDegrade()) {
+    console.warn('⚠️ Auth system running in degraded mode - database not available');
+  } else {
+    throw new Error('Database connection required for auth system');
+  }
+}
+
+// Create auth configuration with conditional database adapter
+const authConfig: any = {
   emailAndPassword: {
     enabled: true,
-    sendResetPassword: async ({ user, url, token }, request) => {
+    sendResetPassword: async ({ user, url, token }: any, request: any) => {
+      if (!isSMTPConfigured()) {
+        console.warn('⚠️ SMTP not configured, skipping password reset email');
+        return;
+      }
+      
       try {
         const subject = "Réinitialisation de votre mot de passe";
         const html = `
@@ -41,7 +56,12 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async ({ user, url, token }: any, request: any) => {
+      if (!isSMTPConfigured()) {
+        console.warn('⚠️ SMTP not configured, skipping verification email');
+        return;
+      }
+      
       try {
         const subject = "Vérification de votre adresse email";
         const html = `
@@ -79,4 +99,11 @@ export const auth = betterAuth({
       bannedUserMessage: "Vous avez été banni de cette application. Contactez le support si besoin."
     })
   ]
-});
+};
+
+// Only add database adapter if database is available
+if (prisma) {
+  authConfig.database = prismaAdapter(prisma, { provider: "postgresql" });
+}
+
+export const auth = betterAuth(authConfig);

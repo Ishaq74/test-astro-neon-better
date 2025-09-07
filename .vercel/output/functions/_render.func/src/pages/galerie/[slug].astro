@@ -1,0 +1,42 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Section from "@ui/Section.astro";
+import Heading from "@ui/Heading.astro";
+import Text from "@ui/Text.astro";
+import Breadcrumb from "@ui/Breadcrumb.astro";
+import { contentLoader } from "../../content.config";
+import QueryLoop from "../../components/QueryLoop.astro";
+import GalerieCard from "../../components/cards/GalerieCard.astro";
+
+const { slug } = Astro.params;
+if (typeof slug !== 'string') {
+  throw new Error('Slug param is required and must be a string');
+}
+const galerie = await contentLoader.loadGalerieBySlug(slug);
+if (!galerie) {
+  return Astro.redirect('/404', 404);
+}
+
+let relatedImages = [];
+if (galerie && galerie.id) {
+  relatedImages = (await contentLoader.loadGalerie()).filter(img => img.id !== galerie.id && (img.servicesGlobal === 1 || img.formationsGlobal === 1));
+}
+---
+<Layout title={galerie?.title || galerie?.alt || 'Galerie'} description={galerie?.description || ''} lang="fr">
+  <Section padding="xl" as="header">
+    <Breadcrumb items={[
+      { label: 'Accueil', href: '/' },
+      { label: 'Galerie', href: '/galerie' },
+      { label: galerie?.title || galerie?.alt || '' }
+    ]} />
+    <Heading tag="h1" fontSize="h1" fontWeight="700">{galerie?.title || galerie?.alt}</Heading>
+    <Text as="p" variant="secondary">{galerie?.description}</Text>
+    <GalerieCard entry={galerie} />
+  </Section>
+  {relatedImages.length > 0 && (
+    <Section padding="lg">
+      <Heading tag="h2" fontSize="h3" fontWeight="700">Autres images de la galerie</Heading>
+      <QueryLoop collection="galerie" global={true} columns={3} gap={4} filter={(img) => img.id !== galerie.id} />
+    </Section>
+  )}
+</Layout>

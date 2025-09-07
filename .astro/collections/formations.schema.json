@@ -1,0 +1,99 @@
+{
+  "$ref": "#/definitions/formations",
+  "definitions": {
+    "formations": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "titre": {
+          "type": "string"
+        },
+        "badge": {
+          "type": "string"
+        },
+        "subtitle": {
+          "type": "string"
+        },
+        "participants": {
+          "type": "number"
+        },
+        "level": {
+          "type": "string"
+        },
+        "program": {
+          "type": "string"
+        },
+        "advantages": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "prix": {
+          "type": "number"
+        },
+        "image": {
+          "type": "string"
+        },
+        "imageAlt": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "categorie": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "steps": {
+          "type": "string"
+        },
+        "duree": {
+          "type": "string"
+        },
+        "durationMinutes": {
+          "type": "number"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "isActive": {
+          "type": "number"
+        },
+        "isFeatured": {
+          "type": "number"
+        },
+        "certification": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "titre",
+        "prix",
+        "slug"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

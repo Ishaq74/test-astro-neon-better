@@ -1,0 +1,48 @@
+{
+  "$ref": "#/definitions/factures",
+  "definitions": {
+    "factures": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "reservationId": {
+          "type": "number"
+        },
+        "userId": {
+          "type": "number"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string"
+        },
+        "pdfUrl": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "reservationId",
+        "userId",
+        "amount",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

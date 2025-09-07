@@ -1,0 +1,11 @@
+---
+import Layout from "@layouts/Layout.astro";
+import QueryLoop from "@components/QueryLoop.astro";
+import Section from "@components/ui/Section.astro";
+---
+<Layout title="Services" description="Découvrez nos services de maquillage professionnel à Annecy." lang="fr">
+  <Section>
+    <h1>Nos Services</h1>
+    <QueryLoop collection="services" active={true} columns={3} gap={6} />
+  </Section>
+</Layout>

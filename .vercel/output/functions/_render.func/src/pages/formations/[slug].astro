@@ -1,0 +1,275 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Section from "@ui/Section.astro";
+import Heading from "@ui/Heading.astro";
+import Text from "@ui/Text.astro";
+import Button from "@ui/Button.astro";
+import Badge from "@ui/Badge.astro";
+import Breadcrumb from "@ui/Breadcrumb.astro";
+import Cta from "../../components/section/Cta.astro";
+import { Icon } from "astro-icon/components";
+import { contentLoader } from "../../content.config";
+import QueryLoop from "../../components/QueryLoop.astro";
+import Newsletter from "../../components/section/Newsletter.astro";
+
+const { slug } = Astro.params;
+if (typeof slug !== 'string') {
+  throw new Error('Slug param is required and must be a string');
+}
+const formation = await contentLoader.loadFormationBySlug(slug);
+let faqs = [];
+let avis = [];
+let images = [];
+let tags = [];
+let steps = [];
+if (formation && formation.id) {
+  faqs = (await contentLoader.loadFaq()).filter(f => f.formationsGlobal === 1 || f.formationId === formation.id);
+  avis = (await contentLoader.loadAvis()).filter(a => a.formationsGlobal === 1 || a.formationId === formation.id);
+  images = (await contentLoader.loadGalerie()).filter(img => img.formationsGlobal === 1 || img.formationId === formation.id);
+  if (Array.isArray(formation.tags)) tags = formation.tags;
+  else if (typeof formation.tags === 'string' && formation.tags) {
+    try { tags = JSON.parse(formation.tags); } catch { tags = []; }
+  }
+  if (Array.isArray(formation.steps)) steps = formation.steps;
+  else if (typeof formation.steps === 'string' && formation.steps) {
+    try { steps = JSON.parse(formation.steps); } catch { steps = []; }
+  }
+}
+if (!formation) {
+  return Astro.redirect('/404', 404);
+}
+---
+<Layout title={formation?.titre} description={formation?.description || ''} lang="fr">
+  <Section padding="xl" as="header">
+    <Breadcrumb items={[
+      { label: 'Accueil', href: '/' },
+      { label: 'Formations', href: '/formations' },
+      { label: formation?.titre || '' }
+    ]} />
+    <div class="hero-center">
+      <div class="hero-icon">
+        {formation?.icon ? (
+          <Icon name={formation.icon} class="icon-main" />
+        ) : (
+          <span class="icon-main">🎓</span>
+        )}
+      </div>
+  <Heading tag="h1" fontSize="h1" fontWeight="700" align="center">{formation?.titre}</Heading>
+  <Text as="p" variant="secondary" class="hero-desc">{formation?.description || ''}</Text>
+      <div class="hero-infos">
+        <div class="hero-info-block">
+          <span class="hero-price">{formation?.prix}</span>
+          <div class="hero-info-labels">
+            <Text as="div" variant="secondary" class="hero-info-label">À partir de</Text>
+            <Text as="div" variant="secondary" class="hero-info-label">par formation</Text>
+          </div>
+        </div>
+        <div class="hero-info-block">
+          <span class="hero-info-emoji">⏱️</span>
+          <div class="hero-info-labels">
+            <Text as="div" variant="secondary" class="hero-info-label">Durée</Text>
+            <Text as="div" variant="secondary" class="hero-info-label">2-5j selon module</Text>
+          </div>
+        </div>
+      </div>
+      {tags.length > 0 && (
+        <div class="hero-tags">
+          {tags.map((tag: string) => <Badge variant="primary" size="md">#{tag}</Badge>)}
+        </div>
+      )}
+    </div>
+  </Section>
+
+  <Section padding="lg" as="section">
+    <Heading tag="h2" fontSize="h2" fontWeight="700">Galerie</Heading>
+    <QueryLoop collection="galerie" formationId={formation.id} columns={4} gap={4} />
+  </Section>
+
+  <Section padding="lg" as="section">
+    <Heading tag="h2" fontSize="h2" fontWeight="700">Avis</Heading>
+    <QueryLoop collection="avis" formationId={formation.id} columns={2} gap={4} />
+  </Section>
+
+  <Section padding="xl" as="section">
+    <div class="details-grid">
+      <div>
+        <Heading tag="h2" fontSize="h2" fontWeight="700">Ce module inclut</Heading>
+        <div class="steps-list">
+          {steps.length > 0 ? (
+            steps.map((step: string, i: number) => (
+              <div class="step-item">
+                <span class="step-num">{i+1}</span>
+                <Text as="span" class="step-text">{step}</Text>
+              </div>
+            ))
+          ) : (
+            formation?.notes && <Text as="div" class="step-notes">{formation.notes}</Text>
+          )}
+        </div>
+      </div>
+      <div>
+        <Heading tag="h3" fontSize="h3" fontWeight="700">Pourquoi choisir cette formation ?</Heading>
+        <ul class="benefits-list">
+          <li>Pédagogie professionnelle et bienveillante</li>
+          <li>Supports de cours exclusifs</li>
+          <li>Certification reconnue</li>
+          <li>Accompagnement personnalisé</li>
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <Section padding="xl" as="section">
+    <Cta
+      title="Prêt(e) à vous former ?"
+      desc={`Réservez votre place pour <strong>${formation?.titre}</strong> et boostez votre carrière dans le maquillage professionnel.`}
+      cta1={{ label: "S'inscrire →", href: "/#contact", variant: "primary" }}
+      cta2={{ label: "← Voir toutes les formations", href: "/formations", variant: "secondary" }}
+      infos="✨ Financement possible • 📚 Petits groupes • ⭐ Satisfaction garantie"
+      icon="📞"
+    />
+  </Section>
+
+    <Section padding="xl" as="section">
+          <Newsletter />
+  </Section>
+</Layout>
+
+
+<style>
+.service-hero {
+  padding: 5rem 0 3rem 0;
+  background: linear-gradient(120deg, var(--theme-bg), var(--theme-surface) 80%);
+  text-align: center;
+}
+.breadcrumb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--theme-text-secondary);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+.breadcrumb a {
+  color: var(--theme-text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.breadcrumb a:hover {
+  color: var(--brand-primary);
+}
+.hero-center {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  padding-bottom: 2rem;
+}
+.hero-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.icon-main {
+  font-size: 3rem;
+  color: var(--brand-primary);
+}
+.hero-desc {
+  margin-bottom: 2rem;
+}
+.hero-infos {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+.hero-info-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hero-price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--brand-primary);
+}
+.hero-info-labels {
+  font-size: 0.9rem;
+  color: var(--theme-text-secondary);
+}
+.hero-tags {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.steps-list {
+  margin-top: 1rem;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.step-num {
+  background: var(--brand-primary);
+  color: #fff;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.step-text {
+  font-size: 1rem;
+}
+.step-notes {
+  color: var(--theme-text-secondary);
+  font-style: italic;
+}
+.benefits-list {
+  margin-top: 1rem;
+  padding-left: 1.2rem;
+  color: var(--brand-primary);
+  font-size: 1rem;
+}
+.cta-box {
+  background: var(--theme-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: 2.5rem 2rem;
+  margin: 3rem auto 0 auto;
+  max-width: 600px;
+  text-align: center;
+}
+.cta-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.cta-title {
+  margin-bottom: 1rem;
+}
+.cta-desc {
+  margin-bottom: 2rem;
+}
+.cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.cta-infos {
+  color: var(--theme-text-secondary);
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+</style>
