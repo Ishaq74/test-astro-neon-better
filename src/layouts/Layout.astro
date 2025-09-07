@@ -1,0 +1,179 @@
+---
+import '../styles/global.css';
+import { AstroFont } from "astro-font";
+import { ClientRouter } from "astro:transitions";
+import Header from '@organisms/Header.astro';
+
+interface Props {
+  title: (string);
+  description: (string);
+  keywords?: (string);
+  author?: (string);
+  ogImage?: (string);
+  canonicalUrl?: (string | URL);
+  prefetchUrls?: (string | URL);
+  cssFiles?: (string | URL)[];
+  jsFiles?: (string | null)[];
+  lang?: (string);
+  robots?: (string);
+  themeColor?: (string);
+  faviconIco?: (string);
+  appleTouchIcon?: (string);
+  favicon32x32?: (string);
+  favicon16x16?: (string);
+  manifest?: (string);
+}
+
+// Using the current URL as the default canonical URL if not provided
+const { url } = Astro.request;
+const { 
+  title = "DEFAULT_TITLE", 
+  description = "DEFAULT_DESCRIPTION", 
+  keywords = "DEFAULT_KEYWORDS", 
+  author = "DEFAULT_AUTHOR", 
+  ogImage = "DEFAULT_OG_IMAGE", 
+  canonicalUrl = url, 
+  prefetchUrls = [], 
+  cssFiles = [], 
+  jsFiles = [],
+  lang = "DEFAULT_LANG",
+  robots = "ROBOTS_CONTENT",
+  themeColor: THEME_COLOR = "DEFAULT_THEME_COLOR",
+  faviconIco: FAVICON_ICO = "/favicon.ico",
+  appleTouchIcon: APPLE_TOUCH_ICON = "/apple-touch-icon.png",
+  favicon32x32: FAVICON_32x32 = "/favicon-32x32.png",
+  favicon16x16: FAVICON_16x16 = "/favicon-16x16.png",
+  manifest: MANIFEST = "/site.webmanifest",
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <AstroFont
+    config={[
+      {
+        name: "Bowlby One SC",
+        src: [
+          {
+            weight: 'normal',
+            style: 'normal',
+            path: '../src/fonts/Bowlby_One_SC/BowlbyOneSC-Regular.ttf',
+          },
+        ],
+        preload: true,
+        display: "swap",
+        selector: "h1,h2,h3,h4,h5,h6,button,.btn, .heading",
+        fallback: "sans-serif",
+      },
+      {
+        name: "Palanquin Dark",
+        src: [
+          {
+            weight: 'bold',
+            style: 'normal',
+            path: '../src/fonts/Palanquin/Palanquin-Bold.ttf',
+          },
+          {
+            weight: '500',
+            style: 'normal',
+            path: '../src/fonts/Palanquin/Palanquin-Medium.ttf',
+          },
+          {
+            weight: 'normal',
+            style: 'normal',
+            path: '../src/fonts/Palanquin/Palanquin-Regular.ttf',
+          },
+          {
+            weight: '600',
+            style: 'normal',
+            path: '../src/fonts/Palanquin/Palanquin-SemiBold.ttf',
+          },
+        ],
+        preload: true,
+        display: "swap",
+        selector: "body",
+        fallback: "sans-serif",
+      },
+    ]}
+  />
+    
+    <!-- Title and Meta -->
+    <title>{title}</title>
+    <meta name="description" content={description}>
+    <meta name="keywords" content={keywords}>
+    <meta name="author" content={author}>
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+    
+    <!-- Prefetch URLs 
+    { prefetchUrls.map((url: string | URL | null | undefined) => (
+      <link rel="prefetch" href={url} />
+    ))}-->
+    
+    <!-- Styles -->
+    { cssFiles.length > 0 && cssFiles.map((file) => (
+      <link rel="stylesheet" href={file} />
+    ))}
+
+  
+    <!-- Scripts -->
+    { jsFiles.length > 0 && jsFiles.map((file) => (
+      <script async src={file}></script>
+    ))}
+
+
+    <!-- Favicon -->
+    <link rel="icon" href={FAVICON_ICO}>
+    <link rel="apple-touch-icon" sizes="180x180" href={APPLE_TOUCH_ICON}>
+    <link rel="icon" type="image/png" sizes="32x32" href={FAVICON_32x32}>
+    <link rel="icon" type="image/png" sizes="16x16" href={FAVICON_16x16}>
+    <link rel="manifest" href={MANIFEST}>
+    
+    <!-- Accessibility and SEO -->
+    <meta name="robots" content={robots}>
+    <meta name="theme-color" content={THEME_COLOR}>
+
+  </head>
+  <body class="layout-body">
+    <Header />
+    <main class="layout-main">
+      <slot />
+    </main>
+    <style>
+      :root {
+        --header-height: 64px;
+      }
+      .layout-body {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+      .layout-main {
+        padding-top: var(--header-height);
+      }
+      @media (max-width: 768px) {
+        :root {
+          --header-height: 56px;
+        }
+      }
+    </style>
+  </body>
+</html>

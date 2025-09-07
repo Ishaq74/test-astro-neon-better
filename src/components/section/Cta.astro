@@ -1,0 +1,106 @@
+---
+import Section from "@ui/Section.astro";
+import Heading from "@ui/Heading.astro";
+import Text from "@ui/Text.astro";
+import Button from "@ui/Button.astro";
+interface Props {
+  title: string;
+  desc: string;
+  cta1: { label: string; href: string; variant?: string };
+  cta2?: { label: string; href: string; variant?: string };
+  infos?: string;
+  icon?: string;
+  class?: string;
+}
+const { title, desc, cta1, cta2, infos, icon = "📞", class: className = "" } = Astro.props as Props;
+---
+<Section padding="xl" class={className}>
+  <div class="cta-box">
+    <div class="cta-icon">{icon}</div>
+    <Heading tag="h2" fontSize="h2" fontWeight="700" class="cta-title">{title}</Heading>
+    <Text as="p" class="cta-desc">{desc}</Text>
+    <div class="cta-actions">
+      <Button href={cta1.href} variant={cta1.variant ?? "primary"} size="lg">{cta1.label}</Button>
+      {cta2 && <Button href={cta2.href} variant={cta2.variant ?? "secondary"} size="lg">{cta2.label}</Button>}
+    </div>
+    {infos && <Text as="p" class="cta-infos">{infos}</Text>}
+  </div>
+</Section>
+
+<style>
+/* --- Premium branding --- */
+.cta-box {
+  background: var(--theme-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: 3rem;
+  margin: 3.5rem auto 0 auto;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+.cta-box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 2.5rem;
+  pointer-events: none;
+  background: linear-gradient(120deg, var(--brand-primary) 0%, transparent 70%);
+  opacity: 0.08;
+  z-index: 0;
+}
+.cta-icon {
+  font-size: 2.7rem;
+  margin-bottom: 1.2rem;
+  color: var(--brand-primary);
+  filter: drop-shadow(0 2px 8px rgba(80,40,120,0.10));
+  z-index: 1;
+  position: relative;
+}
+.cta-title {
+  margin-bottom: 1.1rem;
+  font-family: var(--font-family-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--brand-primary);
+  letter-spacing: -0.5px;
+  z-index: 1;
+  position: relative;
+}
+.cta-desc {
+  margin-bottom: 2.1rem;
+  color: var(--theme-text-secondary);
+  font-size: 1.15rem;
+  z-index: 1;
+  position: relative;
+}
+.cta-actions {
+  display: flex;
+  gap: 1.1rem;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+  z-index: 1;
+  position: relative;
+}
+.cta-infos {
+  color: var(--brand-accent);
+  font-size: 1rem;
+  margin-top: 1.2rem;
+  font-weight: 500;
+  z-index: 1;
+  position: relative;
+}
+@media (max-width: 900px) {
+  .cta-box {
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+  }
+  .cta-title {
+    font-size: 1.3rem;
+  }
+  .cta-icon {
+    font-size: 2rem;
+  }
+}
+</style>

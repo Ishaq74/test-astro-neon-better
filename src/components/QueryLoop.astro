@@ -1,0 +1,227 @@
+---
+import { contentLoader } from '../content.config';
+
+// Importations statiques normales d'Astro
+import Section from '@ui/Section.astro';
+import ServiceCard from '@cards/ServiceCard.astro';
+import FormationCard from '@cards/FormationCard.astro';
+import TeamCard from '@cards/TeamCard.astro';
+import GalerieCard from '@cards/GalerieCard.astro';
+import AvisCard from '@cards/AvisCard.astro';
+
+// Mapping des composants de cartes par collection
+const CardComponents = {
+  services: ServiceCard,
+  formations: FormationCard,
+  team: TeamCard,
+  galerie: GalerieCard,
+  avis: AvisCard,
+};
+
+// Définition des props attendues
+const {
+  collection,
+  filters = {},
+  sort,
+  limit,
+  references = [],
+  categoryFilter,
+  currentId,
+  featured,
+  active,
+  formationId,
+  serviceId,
+  global,
+  servicesGlobal,
+  formationsGlobal,
+  columns = 3,
+  gap = 6,
+  className = "",
+  debug = false
+} = Astro.props;
+
+// Fonction de log de performance
+function logPerformance(label, startTime, endTime, length) {
+  const executionTime = endTime - startTime;
+  if (debug) {
+    console.log(`[QueryLoop:${collection}] ${label} - Time: ${executionTime.toFixed(2)}ms | Length: ${length}`);
+  }
+}
+
+// Début du processus
+const startTotalTime = performance.now();
+if (debug) console.log(`[QueryLoop:${collection}] Démarrage du chargement des données...`);
+
+// Préparation des options de chargement
+const loadOptions = { ...filters };
+
+// Appliquer les filtres communs s'ils sont définis
+if (active !== undefined) loadOptions.isActive = active;
+if (featured !== undefined) loadOptions.isFeatured = featured;
+if (categoryFilter) loadOptions.categorie = categoryFilter;
+
+// Filtres spécifiques pour avis, faq et galerie
+if (['avis', 'faq', 'galerie'].includes(collection)) {
+  if (global !== undefined) loadOptions.global = global;
+  if (servicesGlobal !== undefined) loadOptions.servicesGlobal = servicesGlobal;
+  if (formationsGlobal !== undefined) loadOptions.formationsGlobal = formationsGlobal;
+  if (serviceId !== undefined) loadOptions.serviceId = serviceId;
+  if (formationId !== undefined) loadOptions.formationId = formationId;
+}
+
+// Récupération des données
+const startFetch = performance.now();
+
+// Déterminer dynamiquement la méthode à appeler
+const methodName = `load${collection.charAt(0).toUpperCase() + collection.slice(1)}`;
+
+let entries = [];
+try {
+  if (typeof contentLoader[methodName] === 'function') {
+    const result = await contentLoader[methodName](loadOptions);
+    
+    // Normalisation du résultat (certaines méthodes retournent un tableau, d'autres un objet)
+    if (Array.isArray(result)) {
+      entries = result;
+    } else if (result && typeof result === 'object') {
+      if (result.id) { // Si c'est un objet unique
+        entries = [result];
+      } else if (Array.isArray(result.data)) { // Format { data, total }
+        entries = result.data;
+      }
+    }
+  } else {
+    throw new Error(`Méthode ${methodName} non disponible dans contentLoader`);
+  }
+} catch (error) {
+  console.error(`[QueryLoop:${collection}] Erreur lors du chargement des données:`, error);
+}
+
+const endFetch = performance.now();
+logPerformance("Récupération des données", startFetch, endFetch, entries.length);
+
+// Exclusion de l'élément courant si spécifié
+if (currentId !== undefined) {
+  const numId = typeof currentId === 'string' ? parseInt(currentId, 10) : currentId;
+  entries = entries.filter(entry => entry.id !== numId);
+}
+
+// Chargement automatique des relations communes selon la collection
+let autoRelations = [];
+if (collection === 'services' || collection === 'formations') {
+  autoRelations = ['avis', 'faq', 'galerie'];
+} else if (collection === 'team') {
+  autoRelations = [];
+}
+
+// Combinaison des relations spécifiées et automatiques (sans doublon)
+const allRelations = [...new Set([...references, ...autoRelations])];
+
+// Chargement des relations pour chaque entrée
+if (allRelations.length > 0) {
+  const startRels = performance.now();
+
+  // Obtenir les données des relations pour chaque entrée
+  for (const entry of entries) {
+    // Pour les services et formations, charger automatiquement avis, faq et galerie
+    for (const relation of allRelations) {
+      try {
+        let relationData = [];
+        
+        // Définir la clé pour le filtre (serviceId ou formationId)
+        const idKey = collection === 'formations' ? 'formationId' : 'serviceId';
+        
+        // Déterminer la méthode de chargement appropriée
+        const relMethodName = `load${relation.charAt(0).toUpperCase() + relation.slice(1)}`;
+        
+        if (typeof contentLoader[relMethodName] === 'function') {
+          // Appeler la méthode avec le filtre approprié
+          const filter = { [idKey]: entry.id };
+          relationData = await contentLoader[relMethodName](filter);
+          
+          // Stocker les données directement dans l'entrée
+          entry[relation] = relationData;
+        }
+      } catch (error) {
+        console.error(`[QueryLoop:${collection}] Erreur lors du chargement de la relation ${relation}:`, error);
+        entry[relation] = [];
+      }
+    }
+  }
+
+  const endRels = performance.now();
+  logPerformance("Chargement des relations", startRels, endRels, entries.length);
+}
+
+// Application du tri
+if (sort) {
+  const startSort = performance.now();
+  
+  const { field, order } = sort;
+  entries.sort((a, b) => {
+    let aValue = a[field];
+    let bValue = b[field];
+    
+    // Conversion pour les chaînes
+    if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+    if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+    
+    // Gestion des valeurs null/undefined
+    if (aValue === undefined || aValue === null) return order === 'asc' ? -1 : 1;
+    if (bValue === undefined || bValue === null) return order === 'asc' ? 1 : -1;
+    
+    // Comparaison
+    if (aValue < bValue) return order === 'asc' ? -1 : 1;
+    if (aValue > bValue) return order === 'asc' ? 1 : -1;
+    return 0;
+  });
+  
+  const endSort = performance.now();
+  logPerformance("Tri des données", startSort, endSort, entries.length);
+}
+
+// Application de la limite
+if (limit !== undefined && entries.length > limit) {
+  entries = entries.slice(0, limit);
+}
+
+// Sélection du composant de carte
+const CardComponent = CardComponents[collection];
+if (!CardComponent) {
+  console.error(`[QueryLoop:${collection}] Composant de carte non trouvé pour la collection "${collection}"`);
+}
+
+// Mesure de performance totale
+const endTotalTime = performance.now();
+if (debug) {
+  console.log(`[QueryLoop:${collection}] Traitement terminé en ${(endTotalTime - startTotalTime).toFixed(2)}ms`);
+  console.log(`[QueryLoop:${collection}] ${entries.length} éléments prêts pour l'affichage`);
+}
+
+// Classes Tailwind pour la grille
+function getGridColsClass(cols) {
+  switch (cols) {
+    case 1: return 'grid-cols-1';
+    case 2: return 'grid-cols-1 sm:grid-cols-2';
+    case 3: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+    case 4: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+    case 5: return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5';
+    case 6: return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6';
+    default: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+  }
+}
+
+const gridClass = `grid ${getGridColsClass(columns)} gap-${gap} ${className}`;
+---
+
+{entries.length === 0 ? (
+  <Section padding="lg" layout="flex" justify="center" align="center">
+    <p style="color: var(--theme-muted-foreground); padding: var(--space-12) 0; text-align: center;">Aucun élément trouvé</p>
+  </Section>
+) : (
+  <Section layout="grid" cols={columns} gap="var(--space-6)" class={className}>
+    {entries.map((entry) => (
+      <CardComponent entry={entry} />
+    ))}
+  </Section>
+)}

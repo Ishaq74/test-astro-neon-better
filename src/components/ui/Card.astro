@@ -1,0 +1,63 @@
+---
+type Variant = 'default' | 'elevated' | 'ghost';
+type Padding = 'sm' | 'md' | 'lg';
+
+interface Props {
+  variant?: Variant;
+  padding?: Padding;
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  padding = 'md',
+  class: className,
+} = Astro.props;
+
+const baseClasses = 'card';
+
+const variantClasses: Record<Variant, string> = {
+  default: 'card-default',
+  elevated: 'card-elevated',
+  ghost: 'card-ghost',
+};
+
+const paddingClasses: Record<Padding, string> = {
+  sm: 'p-sm',
+  md: 'p-md',
+  lg: 'p-lg',
+};
+---
+<div class:list={[baseClasses, variantClasses[variant], paddingClasses[padding], className]}>
+  <slot />
+</div>
+
+<style>
+  .card {
+    border-radius: var(--radius-lg);
+    transition: var(--transition-normal);
+  }
+  .p-sm { padding: var(--space-4); }
+  .p-md { padding: var(--space-8); }
+  .p-lg { padding: var(--space-12); }
+
+  .card-default {
+    background-color: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    box-shadow: var(--shadow-sm);
+  }
+  .card-elevated {
+    background-color: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    box-shadow: var(--shadow-lg);
+  }
+  .card-elevated:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+  }
+  .card-ghost {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+</style>

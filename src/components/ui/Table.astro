@@ -1,0 +1,78 @@
+---
+interface TableHeader {
+  key: string;
+  label: string;
+}
+type TableRow = Record<string, any>;
+
+interface Props {
+  headers: TableHeader[];
+  rows: TableRow[];
+  caption?: string;
+  class?: string;
+}
+
+const { headers, rows, caption, class: className } = Astro.props;
+---
+<div class="table-wrapper">
+  <table class:list={["table-base", className]}>
+    {caption && <caption>{caption}</caption>}
+    <thead class="table-header">
+      <tr>
+        {headers.map(header => <th scope="col">{header.label}</th>)}
+      </tr>
+    </thead>
+    <tbody class="table-body">
+      {rows.map(row => (
+        <tr>
+          {headers.map(header => <td data-label={header.label}>{row[header.key]}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--theme-surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .table-base {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  .table-base caption {
+    padding: var(--space-4);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    caption-side: top;
+    text-align: left;
+    color: var(--theme-text);
+  }
+  .table-base th,
+  .table-base td {
+    padding: var(--space-4);
+  }
+  .table-header {
+    background-color: color-mix(in srgb, var(--theme-surface) 50%, var(--theme-bg));
+    border-bottom: 2px solid var(--theme-border);
+  }
+  .table-header th {
+    font-weight: var(--font-weight-semibold);
+    color: var(--theme-text);
+  }
+  .table-body tr {
+    border-bottom: 1px solid var(--theme-border);
+    transition: background-color var(--transition-fast);
+  }
+  .table-body tr:last-child {
+    border-bottom: none;
+  }
+  .table-body tr:hover {
+    background-color: color-mix(in srgb, var(--brand-primary) 5%, transparent);
+  }
+</style>

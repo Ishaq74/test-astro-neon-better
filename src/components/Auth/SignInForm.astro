@@ -1,0 +1,87 @@
+---
+import Input from '@ui/Input.astro';
+import Button from '@ui/Button.astro';
+import Card from '@ui/Card.astro';
+import Heading from '@ui/Heading.astro';
+import Text from '@ui/Text.astro';
+---
+
+<Card class="w-full max-w-md mx-auto">
+  <form id="signin-form" autocomplete="on" novalidate>
+    <Heading tag="h1" fontSize="h2" fontWeight="700" align="center">Connexion</Heading>
+    <Text as="p" align="center" class="mb-4">Connectez-vous à votre compte PGastroCMS</Text>
+    <Input id="email" name="email" type="email" label="Adresse e-mail" required autofocus class="mb-4" />
+    <Input id="password" name="password" type="password" label="Mot de passe" required class="mb-4" />
+    <div id="signin-error" class="mb-4" style="display:none"></div>
+    <Button id="signin-submit" type="submit" variant="primary" size="lg" class="w-full">Se connecter</Button>
+    <div class="mt-4 text-center flex flex-col gap-2">
+      <a href="/auth/inscription" class="text-sm text-primary hover:underline">Pas encore inscrit ? Créez un compte</a>
+      <a href="/auth/mot-de-passe-oublie" class="text-sm text-gray-600 hover:underline">Mot de passe oublié ?</a>
+    </div>
+  </form>
+</Card>
+
+<script type="module">
+import { authClient } from '../../lib/auth-client';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('signin-form');
+  const email = document.getElementById('email');
+  const password = document.getElementById('password');
+  const errorDiv = document.getElementById('signin-error');
+  const submitBtn = document.getElementById('signin-submit');
+  const loader = document.getElementById('signin-loader');
+  const btnText = document.getElementById('signin-btn-text');
+
+  const showError = (msg, focusInput) => {
+    errorDiv.textContent = msg;
+    errorDiv.classList.remove('hidden');
+    if (focusInput) focusInput.focus();
+    submitBtn.disabled = false;
+    btnText.style.display = '';
+    loader.style.display = 'none';
+  };
+
+  const setLoading = (loading) => {
+    submitBtn.disabled = loading;
+    btnText.style.display = loading ? 'none' : '';
+    loader.style.display = loading ? 'inline-block' : 'none';
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.classList.add('hidden');
+    errorDiv.textContent = '';
+    
+    if (!email.value || !password.value) {
+      showError('Veuillez remplir tous les champs.', !email.value ? email : password);
+      return;
+    }
+
+    setLoading(true);
+
+    authClient.signIn.email({
+      email: email.value,
+      password: password.value,
+      callbackURL: "/profil"
+    }, {
+      onRequest: () => { /* loader déjà activé */ },
+      onSuccess: () => { window.location.href = '/profil'; },
+      onError: (ctx) => {
+        let msg = ctx.error.message || 'Erreur lors de la connexion.';
+        if (msg === 'Invalid email or password') {
+          msg = 'Email ou mot de passe invalide.';
+        }
+        if (msg === 'Email not verified') {
+          msg = "Adresse e-mail non vérifiée. Veuillez vérifier votre boîte mail.";
+        }
+        errorDiv.textContent = msg;
+        errorDiv.classList.remove('hidden');
+        submitBtn.disabled = false;
+        btnText.style.display = '';
+        loader.style.display = 'none';
+      }
+    });
+  });
+});
+</script>

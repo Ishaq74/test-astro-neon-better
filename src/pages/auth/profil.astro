@@ -1,0 +1,188 @@
+---
+export const prerender = false;
+
+import Layout from "../../layouts/Layout.astro";
+import { getServerSession } from '@lib/auth-server';
+import { Icon } from 'astro-icon/components';
+import Button from '@ui/Button.astro';
+import Card from '@ui/Card.astro';
+import Heading from '@ui/Heading.astro';
+import Text from '@ui/Text.astro';
+import Input from '@ui/Input.astro';
+
+// Récupérer directement la session côté serveur
+const session = await getServerSession(Astro.request);
+
+if (!session?.user) {
+  return Astro.redirect("/connexion");
+}
+
+const user = session.user;
+---
+
+<Layout title="Mon Profil" description="Page de profil utilisateur">
+
+  <Heading tag="h1" fontSize="h2" fontWeight="700" align="center" class="mb-6">Mon Profil</Heading>
+  <Card class="max-w-md mx-auto mt-4">
+    <form id="profil-form" class="flex flex-col gap-4">
+      <Text as="label" for="name" class="block text-sm font-medium mb-1">Nom</Text>
+      <div class="flex items-center gap-2">
+        <Input 
+          id="name" 
+          name="name" 
+          type="text" 
+          value={user?.name ?? ''} 
+          autocomplete="name" 
+          readonly
+          aria-label="Nom"
+          class="w-full bg-gray-100 cursor-not-allowed"
+        />
+        <Button type="button" variant="primary" id="edit-name-btn" aria-label="Modifier le nom">
+          <Icon name="mdi:edit" />
+        </Button>
+      </div>
+      <Text id="profil-error" as="p" class="mt-1 text-xs text-red-500 hidden"></Text>
+
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <Text as="label" for="email" class="block text-sm font-medium mb-1">Email</Text>
+          <Input 
+            id="email" 
+            name="email" 
+            type="email" 
+            value={user.email ?? ''} 
+            disabled 
+            autocomplete="email" 
+            aria-label="Email"
+            class="w-full bg-gray-100 cursor-not-allowed"
+          />
+        </div>
+        <div class="ml-3 mt-6">
+          {user.emailVerified 
+            ? <Icon name="mdi:check-circle" class:list={["text-green-500"]} /> 
+            : <Button size="sm" variant="secondary" id="verify-email-btn">Vérifier</Button>
+          }
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <Button type="submit" variant="primary" size="lg" class="w-full flex items-center justify-center gap-2">
+          <span id="profil-btn-text">Mettre à jour</span>
+          <span id="profil-loader" class="hidden">
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+          </span>
+        </Button>
+      </div>
+    </form>
+  </Card>
+
+  <script type="module">
+    import { authClient } from '../../src/lib/auth-client';
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('profil-form');
+      const nameInput = form.querySelector('input[name="name"]');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const btnText = document.getElementById('profil-btn-text');
+      const loader = document.getElementById('profil-loader');
+      const errorEl = document.getElementById('profil-error');
+      const editNameBtn = document.getElementById('edit-name-btn');
+      const verifyBtn = document.getElementById('verify-email-btn');
+
+      const showError = (msg) => {
+        errorEl.textContent = msg;
+        errorEl.classList.remove('hidden');
+      };
+
+      const showSuccess = (msg) => {
+        errorEl.textContent = msg;
+        errorEl.classList.remove('hidden');
+        errorEl.classList.remove('text-red-500');
+        errorEl.classList.add('text-green-600');
+      };
+
+      const clearError = () => {
+        errorEl.textContent = '';
+        errorEl.classList.add('hidden');
+        errorEl.classList.remove('text-green-600');
+        errorEl.classList.remove('text-red-500');
+      };
+
+      if (editNameBtn) {
+        editNameBtn.addEventListener('click', () => {
+          nameInput.removeAttribute('readonly');
+          nameInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
+          nameInput.classList.add('bg-white', 'cursor-text', 'border-blue-500');
+          nameInput.focus();
+        });
+      }
+
+      if (verifyBtn) {
+        verifyBtn.addEventListener('click', async () => {
+          clearError();
+          verifyBtn.disabled = true;
+          verifyBtn.textContent = 'Envoi...';
+          try {
+            await authClient.sendVerificationEmail({
+              email: document.getElementById('email').value,
+              callbackURL: '/profil'
+            });
+            showSuccess('Un email de vérification a été envoyé. Vérifiez votre boîte mail.');
+          } catch (err) {
+            showError('Erreur lors de l’envoi du mail.');
+          } finally {
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = 'Vérifier';
+          }
+        });
+      }
+
+      const setLoading = (loading) => {
+        submitBtn.disabled = loading;
+        btnText.style.display = loading ? 'none' : '';
+        loader.classList.toggle('hidden', !loading);
+      };
+
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        clearError();
+
+        const name = nameInput.value.trim();
+        if (!name) {
+          showError('Le nom ne peut pas être vide.');
+          nameInput.focus();
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          // Vérifier la disponibilité du nom avant update
+          const response = await authClient.checkUsernameAvailable?.({ name });
+          if (response?.data?.available === false) {
+            showError('Ce nom est déjà pris. Choisissez-en un autre.');
+            setLoading(false);
+            return;
+          }
+
+          // Update avec BetterAuth
+          await authClient.updateUser({ name });
+
+          // Remettre en readonly après update
+          nameInput.setAttribute('readonly', 'true');
+          nameInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+          nameInput.classList.remove('bg-white', 'cursor-text', 'border-blue-500');
+
+          showSuccess('Profil mis à jour !');
+        } catch (err) {
+          console.error(err);
+          showError('Une erreur est survenue. Réessayez plus tard.');
+        } finally {
+          setLoading(false);
+        }
+      });
+    });
+  </script>
+</Layout>

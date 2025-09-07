@@ -1,0 +1,31 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'form'> {
+  class?: string;
+}
+
+const { class: className, ...rest } = Astro.props;
+---
+<form class:list={["form-grid", className]} {...rest}>
+  <slot />
+  <div class="form-actions">
+    <slot name="actions" />
+  </div>
+</form>
+
+<style>
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+  }
+  .form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+</style>

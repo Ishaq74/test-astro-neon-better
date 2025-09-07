@@ -1,0 +1,80 @@
+---
+---
+<div class="nav-links" id="mobile-nav-links">
+  <a href="/">Accueil</a>
+  <a href="/services">Services</a>
+  <a href="/formations">Formations</a>
+  <a href="/equipe">Équipe</a>
+  <a href="/galerie">Galerie</a>
+  <a href="/auth/login">Connexion</a>
+</div>
+
+<style>
+  .nav-links {
+    display: none; /* Hidden by default on all screens */
+    gap: var(--space-6);
+  }
+
+  .nav-links a {
+    font-weight: var(--font-weight-medium);
+    color: var(--theme-text);
+    text-decoration: none;
+    position: relative;
+    padding-bottom: var(--space-1);
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--brand-primary);
+    transition: width var(--transition-normal);
+  }
+
+  .nav-links a:hover::after {
+    width: 100%;
+  }
+
+  /* Desktop navigation */
+  @media (min-width: 768px) {
+    .nav-links {
+      display: flex;
+      flex-direction: row;
+      position: static;
+      height: auto;
+      width: auto;
+      background-color: transparent;
+      transform: none;
+    }
+  }
+
+  /* Mobile navigation overlay */
+  @media (max-width: 767px) {
+    .nav-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: var(--theme-surface);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+      z-index: var(--z-index-dropdown); /* Lower than hamburger */
+    }
+
+    .nav-links.is-open {
+      display: flex;
+      transform: translateX(0);
+    }
+
+    .nav-links a {
+      font-size: var(--font-size-xl);
+    }
+  }
+</style>

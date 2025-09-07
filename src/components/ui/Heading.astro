@@ -1,0 +1,83 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
+  align?: 'center' | 'left' | 'right';
+  iconLeft?: string;
+  iconRight?: string;
+  iconSize?: number;
+  iconPosition?: 'left' | 'right' | 'both';
+  textColor?: 'black' | 'white' | 'primary' | 'secondary' | 'tertiary' | string;
+  fontFamily?: 'base' | 'heading' | 'mono' | string;
+  fontWeight?: '400' | '500' | '600' | '700' | '800' | '900' | string;
+  fontSize?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'base' | 'bold' | string;
+  className?: string;
+  [key: string]: any;
+}
+
+const {
+  tag = 'h2',
+  align = 'center',
+  iconLeft,
+  iconRight,
+  iconSize = 24,
+  iconPosition = 'both',
+  textColor = 'black',
+  fontFamily = 'heading',
+  fontWeight = '400',
+  fontSize = 'h2',
+  className = '',
+  ...htmlAttributes
+} = Astro.props as Props;
+
+const validTags = ['h1','h2','h3','h4','h5','h6','p','span'];
+const HeadingTag = validTags.includes(tag) ? tag : 'h2';
+
+const justifyContentClass = {
+  left: 'justify-start',
+  center: 'justify-center',
+  right: 'justify-end',
+}[align] || 'justify-center';
+
+// Gestion fallback textColor: si textColor n'est pas une clé définie, on l'utilise directement.
+const knownColors = ['black', 'white', 'primary', 'secondary', 'tertiary'];
+const cssColor = knownColors.includes(textColor) ? `var(--color-${textColor})` : textColor;
+
+const cssFontFamily = `var(--font-family-${fontFamily})`;
+const cssFontWeight = `var(--font-weight-${fontWeight})`;
+const cssFontSize = `var(--font-size-${fontSize})`;
+---
+
+<style is:inline>
+  .heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .justify-start {
+    justify-content: flex-start;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
+  }
+</style>
+
+<HeadingTag
+  class={`heading ${justifyContentClass} ${className}`}
+  style={`color: ${cssColor}; font-family: ${cssFontFamily}; font-weight: ${cssFontWeight}; font-size: ${cssFontSize};`}
+  {...htmlAttributes}
+>
+  {(iconLeft && (iconPosition === 'left' || iconPosition === 'both')) && (
+    <Icon name={iconLeft} size={iconSize} />
+  )}
+
+  <slot />
+
+  {(iconRight && (iconPosition === 'right' || iconPosition === 'both')) && (
+    <Icon name={iconRight} size={iconSize} />
+  )}
+</HeadingTag>

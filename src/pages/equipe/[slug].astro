@@ -1,0 +1,35 @@
+---
+import Layout from "@layouts/Layout.astro";
+import Section from "@ui/Section.astro";
+import Heading from "@ui/Heading.astro";
+import Text from "@ui/Text.astro";
+import Breadcrumb from "@ui/Breadcrumb.astro";
+import { contentLoader } from "@content.config";
+import QueryLoop from "@components/QueryLoop.astro";
+import TeamCard from "@cards/TeamCard.astro";
+
+const { slug } = Astro.params;
+if (typeof slug !== 'string') {
+  throw new Error('Slug param is required and must be a string');
+}
+const user = await contentLoader.loadUserBySlug(slug);
+---
+
+<Layout title={user?.nom || 'Membre équipe'} description={user?.bio || ''} lang="fr">
+  <Section padding="xl" as="header">
+    <Breadcrumb items={[
+      { label: 'Accueil', href: '/' },
+      { label: 'Équipe', href: '/equipe' },
+      { label: user?.nom || '' }
+    ]} />
+    <Heading tag="h1" fontSize="h1" fontWeight="700">{user?.nom}</Heading>
+    <Text as="p" variant="secondary">{user?.bio}</Text>
+    <TeamCard entry={user} />
+  </Section>
+  {relatedMembers.length > 0 && (
+    <Section padding="lg">
+      <Heading tag="h2" fontSize="h3" fontWeight="700">Autres membres de l'équipe</Heading>
+      <QueryLoop collection="team" global={true} columns={3} gap={4} filter={(m) => m.id !== member.id} />
+    </Section>
+  )}
+</Layout>

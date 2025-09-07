@@ -1,0 +1,331 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "../ui/Section.astro";
+import Heading from "../ui/Heading.astro";
+import Text from "../ui/Text.astro";
+import Button from "../ui/Button.astro";
+
+const benefits = [
+  {
+    icon: "mdi:star",
+    title: "Conseils beauté exclusifs",
+    description: "Recevez mes meilleurs tips beauté directement dans votre boîte mail"
+  },
+  {
+    icon: "mdi:gift",
+    title: "Offres privilégiées",
+    description: "Accès prioritaire à mes formations et réductions exclusives"
+  },
+  {
+    icon: "mdi:mail",
+    title: "Tendances en avant-première",
+    description: "Découvrez les dernières tendances maquillage avant tout le monde"
+  }
+];
+---
+<Section padding="xl" bgColor="gradient-hero" class="newsletter-section">
+  <div class="newsletter-container">
+    <div class="newsletter-card">
+      <div class="newsletter-grid">
+        <div class="newsletter-content">
+          <div class="newsletter-header">
+            <div class="newsletter-header-icon">
+              <Icon name="mdi:mail" class="newsletter-header-icon-svg" />
+            </div>
+            <span class="newsletter-header-label">Newsletter Beauté</span>
+          </div>
+          <Heading tag="h2" fontSize="h2" fontWeight="700" class="newsletter-title">
+            Rejoignez ma
+            <span class="newsletter-title-gradient">Communauté Beauté</span>
+          </Heading>
+          <Text as="p" class="newsletter-desc">
+            Inscrivez-vous à ma newsletter et recevez chaque mois mes conseils d'experte, les dernières tendances et des offres exclusives.
+          </Text>
+          <form method="post" action="#" class="newsletter-form">
+            <input type="email" name="email" placeholder="Votre adresse email" required class="newsletter-input" />
+            <Button type="submit" variant="primary" size="lg" class="newsletter-btn">S'inscrire</Button>
+          </form>
+          <Text as="p" class="newsletter-privacy">Désinscription possible à tout moment. Vos données sont protégées.</Text>
+          <div class="newsletter-benefits">
+            <Heading tag="h4" fontSize="h4" fontWeight="600" class="newsletter-benefits-title">Ce que vous recevrez :</Heading>
+            <div class="newsletter-benefits-list">
+              {benefits.map(benefit => (
+                <div class="newsletter-benefit-item">
+                  <div class="newsletter-benefit-icon">
+                    <Icon name={benefit.icon} class="newsletter-benefit-icon-svg" />
+                  </div>
+                  <div>
+                    <div class="newsletter-benefit-title">{benefit.title}</div>
+                    <div class="newsletter-benefit-desc">{benefit.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div class="newsletter-visual">
+          <div class="newsletter-visual-content">
+            <div class="newsletter-visual-gift">
+              <Icon name="mdi:gift" class="newsletter-visual-gift-svg" />
+            </div>
+            <Heading tag="h3" fontSize="h3" fontWeight="700" class="newsletter-visual-title">Cadeau de Bienvenue</Heading>
+            <Text as="p" class="newsletter-visual-desc">
+              Guide gratuit "Les 10 Secrets d'un Maquillage Parfait" offert à votre inscription
+            </Text>
+            <div class="newsletter-visual-stats">
+              <div>
+                <div class="newsletter-visual-stat-value">1200+</div>
+                <div class="newsletter-visual-stat-label">Abonnées</div>
+              </div>
+              <div>
+                <div class="newsletter-visual-stat-value">98%</div>
+                <div class="newsletter-visual-stat-label">Satisfaction</div>
+              </div>
+            </div>
+            <div class="newsletter-visual-deco deco1"></div>
+            <div class="newsletter-visual-deco deco2"></div>
+            <div class="newsletter-visual-deco deco3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<style>
+.newsletter-section {
+  background: linear-gradient(120deg, var(--theme-bg), var(--theme-surface) 80%);
+}
+.newsletter-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.newsletter-card {
+  background: var(--theme-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.newsletter-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+.newsletter-content {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.newsletter-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.newsletter-header-icon {
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.newsletter-header-icon-svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.newsletter-header-label {
+  color: var(--brand-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.newsletter-title {
+  font-family: var(--font-family-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--theme-text);
+  margin-bottom: 0.5rem;
+}
+.newsletter-title-gradient {
+  display: block;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+.newsletter-desc {
+  color: var(--theme-text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+.newsletter-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.newsletter-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--theme-border);
+  font-size: 1rem;
+  outline: none;
+}
+.newsletter-btn {
+  padding: 0.75rem 2rem;
+}
+.newsletter-privacy {
+  font-size: 0.85rem;
+  color: var(--theme-text-secondary);
+  margin-top: 0.5rem;
+}
+.newsletter-benefits {
+  margin-top: 2rem;
+}
+.newsletter-benefits-title {
+  font-size: 1.1rem;
+  color: var(--theme-text);
+  margin-bottom: 0.5rem;
+}
+.newsletter-benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.newsletter-benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.newsletter-benefit-icon {
+  background: var(--brand-primary);
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.newsletter-benefit-icon-svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.newsletter-benefit-title {
+  font-weight: 600;
+  color: var(--theme-text);
+  font-size: 1rem;
+}
+.newsletter-benefit-desc {
+  color: var(--theme-text-secondary);
+  font-size: 0.95rem;
+}
+.newsletter-visual {
+  background: linear-gradient(120deg, var(--brand-primary) 60%, var(--brand-accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 3rem;
+}
+.newsletter-visual-content {
+  text-align: center;
+  color: var(--theme-text);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+.newsletter-visual-gift {
+  width: 4rem;
+  height: 4rem;
+  background: var(--theme-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  box-shadow: var(--shadow-sm);
+}
+.newsletter-visual-gift-svg {
+  width: 2rem;
+  height: 2rem;
+  color: var(--brand-primary);
+}
+.newsletter-visual-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--theme-text);
+}
+.newsletter-visual-desc {
+  color: var(--theme-text-secondary);
+  font-size: 1rem;
+}
+.newsletter-visual-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.newsletter-visual-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+.newsletter-visual-stat-label {
+  font-size: 0.95rem;
+  color: var(--theme-text-secondary);
+}
+.newsletter-visual-deco {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+  pointer-events: none;
+}
+.deco1 {
+  top: 2rem;
+  right: 2rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--brand-primary);
+  animation: float 3s infinite ease-in-out;
+}
+.deco2 {
+  bottom: 2rem;
+  left: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--brand-accent);
+  animation: float 4s infinite ease-in-out 2s;
+}
+.deco3 {
+  top: 50%;
+  left: 1rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--brand-primary);
+  animation: float 5s infinite ease-in-out 1s;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@media (max-width: 900px) {
+  .newsletter-grid {
+    grid-template-columns: 1fr;
+  }
+  .newsletter-visual {
+    padding: 2rem;
+  }
+  .newsletter-content {
+    padding: 2rem;
+  }
+}
+</style>

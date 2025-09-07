@@ -1,0 +1,25 @@
+---
+interface Props {
+  variant?: 'solid' | 'dashed';
+  class?: string;
+}
+const { variant = 'solid', class: className } = Astro.props;
+---
+<hr class:list={['divider', `divider-${variant}`, className]} />
+
+<style>
+  .divider {
+    border: none;
+    margin: var(--space-12) 0;
+    width: 100%;
+  }
+  .divider-solid {
+    height: 1px;
+    background-color: var(--theme-border);
+  }
+  .divider-dashed {
+    border-top: 2px dashed var(--theme-border);
+    background: none;
+    height: 0;
+  }
+</style>

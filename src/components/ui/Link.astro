@@ -1,0 +1,57 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props extends astroHTML.JSX.AnchorHTMLAttributes {
+  variant?: 'primary' | 'subtle';
+  iconLeft?: string;
+  iconRight?: string;
+  iconSize?: number;
+}
+
+const { variant = 'primary', iconLeft, iconRight, iconSize = 20, class: className, ...rest } = Astro.props;
+
+const variantClasses = {
+  primary: 'link-primary',
+  subtle: 'link-subtle',
+}
+---
+<a class:list={["link-base", variantClasses[variant], className]} {...rest}>
+  {iconLeft && <Icon name={iconLeft} width={iconSize} height={iconSize} />}
+  <span><slot /></span>
+  {iconRight && <Icon name={iconRight} width={iconSize} height={iconSize} />}
+</a>
+
+<style>
+  .link-base {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+    transition: var(--transition-fast);
+    font-weight: var(--font-weight-medium);
+  }
+  .link-base span {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    transition: var(--transition-fast);
+  }
+  .link-primary {
+    color: var(--brand-primary);
+  }
+  .link-primary:hover {
+    color: var(--brand-primary-hover);
+  }
+  .link-primary:hover span {
+    text-decoration-color: var(--brand-primary-hover);
+  }
+  .link-subtle {
+    color: var(--theme-text-secondary);
+  }
+  .link-subtle:hover {
+    color: var(--theme-text);
+  }
+  .link-subtle:hover span {
+    text-decoration-color: var(--theme-text);
+  }
+</style>

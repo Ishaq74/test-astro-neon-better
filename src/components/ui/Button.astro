@@ -1,0 +1,183 @@
+---
+import { Icon } from 'astro-icon/components';
+
+type Variant = 'primary' | 'secondary' | 'destructive' | 'ghost' | 'link';
+type Size = 'sm' | 'md' | 'lg';
+
+type ButtonProps = astroHTML.JSX.ButtonHTMLAttributes & {
+  variant?: Variant;
+  size?: Size;
+  iconLeft?: string;
+  iconRight?: string;
+};
+
+type AnchorProps = astroHTML.JSX.AnchorHTMLAttributes & {
+  variant?: Variant;
+  size?: Size;
+  iconLeft?: string;
+  iconRight?: string;
+  href?: string;
+};
+
+type Props = ButtonProps | AnchorProps;
+
+const {
+  variant = 'primary',
+  size = 'md',
+  iconLeft,
+  iconRight,
+  class: className,
+  ...rest
+} = Astro.props;
+
+// Type guard to check if href exists
+const isAnchor = typeof (Astro.props as AnchorProps).href === 'string' && (Astro.props as AnchorProps).href.length > 0;
+const href = isAnchor ? (Astro.props as AnchorProps).href : undefined;
+
+const Tag = isAnchor ? 'a' : 'button';
+
+const baseClasses = 'btn';
+
+const variantClasses: Record<Variant, string> = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  destructive: 'btn-destructive',
+  ghost: 'btn-ghost',
+  link: 'btn-link',
+};
+
+const sizeClasses: Record<Size, string> = {
+  sm: 'btn-sm',
+  md: 'btn-md',
+  lg: 'btn-lg',
+};
+
+const iconSize: Record<Size, number> = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+}
+---
+
+{isAnchor ? (
+  <a
+    class:list={[baseClasses, variantClasses[variant], sizeClasses[size], className]}
+    href={href}
+    {...rest}
+  >
+    {iconLeft && <Icon name={iconLeft} width={iconSize[size]} height={iconSize[size]} />}
+    <slot />
+    {iconRight && <Icon name={iconRight} width={iconSize[size]} height={iconSize[size]} />}
+  </a>
+) : (
+  <button
+    class:list={[baseClasses, variantClasses[variant], sizeClasses[size], className]}
+    type={rest.type === 'button' || rest.type === 'submit' || rest.type === 'reset'
+      ? rest.type
+      : 'button'}
+    {...rest}
+  >
+    {iconLeft && <Icon name={iconLeft} width={iconSize[size]} height={iconSize[size]} />}
+    <slot />
+    {iconRight && <Icon name={iconRight} width={iconSize[size]} height={iconSize[size]} />}
+  </button>
+)}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-md);
+    border: var(--border-width-lg) solid transparent;
+    transition: var(--transition-fast);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn:focus-visible {
+    outline: var(--border-width-lg) solid var(--brand-primary);
+    outline-offset: 2px;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .btn:not(:disabled):active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Sizes */
+  .btn-sm {
+    font-size: var(--font-size-sm);
+    padding: var(--space-2) var(--space-3);
+  }
+  .btn-md {
+    font-size: var(--font-size-base);
+    padding: var(--space-3) var(--space-5);
+  }
+  .btn-lg {
+    font-size: var(--font-size-lg);
+    padding: var(--space-4) var(--space-6);
+  }
+
+  /* Variants */
+  .btn-primary {
+    background-color: var(--brand-primary);
+    color: white;
+  }
+  .btn-primary:not(:disabled):hover {
+    background-color: var(--brand-primary-hover);
+  }
+
+  .btn-secondary {
+    background-color: var(--theme-surface);
+    color: var(--theme-text);
+    border-color: var(--theme-border);
+  }
+  .btn-secondary:not(:disabled):hover {
+    background-color: var(--theme-bg);
+    border-color: var(--theme-border-hover);
+  }
+
+  .btn-destructive {
+    background-color: var(--feedback-error);
+    color: white;
+  }
+  .btn-destructive:not(:disabled):hover {
+    background-color: var(--brand-accent-hover);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--theme-text);
+    border-color: transparent;
+  }
+  .btn-ghost:not(:disabled):hover {
+    background-color: var(--theme-surface);
+    border-color: var(--theme-border);
+  }
+
+  .btn-link {
+    background-color: transparent;
+    color: var(--brand-primary);
+    border-color: transparent;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .btn-link:hover {
+    box-shadow: none;
+    transform: none;
+    color: var(--brand-primary-hover);
+  }
+</style>

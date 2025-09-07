@@ -1,0 +1,263 @@
+---
+import Card from "@ui/Card.astro";
+import Badge from "@ui/Badge.astro";
+import Button from "@ui/Button.astro";
+import { Icon } from "astro-icon/components";
+
+// Détermine le type de galerie pour l'affichage du badge
+let galerieType = "";
+let galerieVariant: "default" | "primary" | "secondary" = "default";
+
+if (Astro.props.entry.global === 1) {
+  galerieType = "Galerie générale";
+  galerieVariant = "default";
+} else if (Astro.props.entry.servicesGlobal === 1 || Astro.props.entry.serviceId) {
+  galerieType = Astro.props.entry.servicesGlobal === 1 ? "Services" : "Service";
+  galerieVariant = "primary";
+} else if (Astro.props.entry.formationsGlobal === 1 || Astro.props.entry.formationId) {
+  galerieType = Astro.props.entry.formationsGlobal === 1 ? "Formations" : "Formation";
+  galerieVariant = "secondary";
+}
+
+// Formate la date de création si disponible
+let formattedDate = "";
+if (Astro.props.entry.createdAt) {
+  try {
+    const date = new Date(Astro.props.entry.createdAt);
+    formattedDate = new Intl.DateTimeFormat('fr-FR', { 
+      day: 'numeric', 
+      month: 'short', 
+      year: 'numeric' 
+    }).format(date);
+  } catch (e) {
+    formattedDate = Astro.props.entry.createdAt;
+  }
+}
+---
+
+<Card class="galerie-card">
+  <div class="galerie-card-content">
+  <div class="galerie-card-image-block">
+      <!-- Image principale avec zoom au survol -->
+      <div class="galerie-card-image-wrapper">
+        <img 
+          src={Astro.props.entry.imageUrl} 
+          alt={Astro.props.entry.alt || Astro.props.entry.title} 
+          class="galerie-card-img"
+          loading="lazy"
+        />
+      </div>
+      
+      <!-- Badge type de galerie -->
+      {galerieType && (
+        <div class="galerie-card-type-badge">
+          <Badge variant={galerieVariant} size="sm">{galerieType}</Badge>
+        </div>
+      )}
+      
+      <!-- Overlay au survol avec bouton preview -->
+      <div class="galerie-card-overlay">
+        <Button 
+          variant="secondary" 
+          size="sm"
+          data-lightbox="gallery" 
+          data-image={Astro.props.entry.imageUrl}
+          data-title={Astro.props.entry.title}
+        >
+          <Icon name="mdi:eye" class="galerie-card-overlay-icon" />
+          Preview
+        </Button>
+      </div>
+    </div>
+    
+    <!-- Contenu texte -->
+  <div class="galerie-card-text-block">
+  <h3 class="galerie-card-title">
+        {Astro.props.entry.title}
+      </h3>
+      
+      <!-- Description si disponible (tronquée) -->
+      {Astro.props.entry.description && (
+        <p class="galerie-card-description">
+          {Astro.props.entry.description}
+        </p>
+      )}
+      
+      <!-- Meta informations -->
+  <div class="galerie-card-meta-row">
+        <!-- Auteur -->
+        {Astro.props.entry.uploadedBy && (
+          <div class="galerie-card-meta-author">
+            <Icon name="mdi:account" class="galerie-card-meta-icon" />
+            <span>{Astro.props.entry.uploadedBy}</span>
+          </div>
+        )}
+        
+        <!-- Date -->
+        {formattedDate && (
+          <div class="galerie-card-meta-date">
+            <Icon name="mdi:calendar" class="galerie-card-meta-icon" />
+            <span>{formattedDate}</span>
+          </div>
+        )}
+      </div>
+      
+      <!-- Lien vers service ou formation associé -->
+      {(Astro.props.entry.service || Astro.props.entry.formation) && (
+        <div class="galerie-card-meta-link-row">
+          <Icon name="mdi:link" class="galerie-card-meta-link-icon" />
+          <a 
+            href={Astro.props.entry.service 
+              ? `/services/${Astro.props.entry.service.slug}` 
+              : `/formations/${Astro.props.entry.formation.slug}`}
+            class="galerie-card-meta-link"
+          >
+            {Astro.props.entry.service 
+              ? Astro.props.entry.service.nom 
+              : Astro.props.entry.formation.title || Astro.props.entry.formation.titre}
+          </a>
+        </div>
+      )}
+<style>
+  .galerie-card {
+    background: var(--theme-card);
+    color: var(--theme-card-foreground);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 0;
+    transition: box-shadow 0.2s;
+    overflow: hidden;
+  }
+  .galerie-card-content {}
+  .galerie-card-image-block {
+    position: relative;
+    width: 100%;
+  }
+  .galerie-card-image-wrapper {
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    width: 100%;
+    position: relative;
+  }
+  .galerie-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+  .galerie-card:hover .galerie-card-img {
+    transform: scale(1.05);
+  }
+  .galerie-card-type-badge {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 2;
+  }
+  .galerie-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s;
+    z-index: 3;
+  }
+  .galerie-card:hover .galerie-card-overlay {
+    opacity: 1;
+  }
+  .galerie-card-overlay-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: var(--space-2);
+  }
+  .galerie-card-text-block {
+    padding: var(--space-4);
+    background: var(--theme-card);
+    color: var(--theme-card-foreground);
+  }
+  .galerie-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--theme-foreground);
+    margin-bottom: var(--space-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .galerie-card-description {
+    font-size: 0.95rem;
+    color: var(--theme-muted-foreground);
+    margin-top: var(--space-1);
+    line-clamp: 2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .galerie-card-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-3);
+    font-size: 0.85rem;
+    color: var(--theme-muted-foreground);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--theme-border);
+  }
+  .galerie-card-meta-author, .galerie-card-meta-date {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .galerie-card-meta-icon {
+    width: 14px;
+    height: 14px;
+    margin-right: var(--space-1);
+  }
+  .galerie-card-meta-link-row {
+    display: flex;
+    align-items: center;
+    margin-top: var(--space-2);
+    font-size: 0.95rem;
+  }
+  .galerie-card-meta-link-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--theme-primary);
+    margin-right: var(--space-1);
+  }
+  .galerie-card-meta-link {
+    color: var(--theme-primary);
+    text-decoration: underline;
+    margin-left: var(--space-1);
+  }
+</style>
+    </div>
+  </div>
+</Card>
+
+<script>
+  // Script pour initialiser la lightbox (à implémenter selon votre solution de lightbox)
+  document.addEventListener('DOMContentLoaded', () => {
+    const lightboxButtons = document.querySelectorAll('[data-lightbox="gallery"]');
+    
+    lightboxButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const imageUrl = button.getAttribute('data-image');
+        const imageTitle = button.getAttribute('data-title');
+        
+        // Ici, vous pouvez appeler votre fonction lightbox préférée
+        // Par exemple : openLightbox(imageUrl, imageTitle);
+        
+        // En attendant, ouvrons l'image dans un nouvel onglet
+        if (typeof window !== 'undefined' && imageUrl) {
+          window.open(imageUrl, '_blank');
+        }
+      });
+    });
+  });
+</script>

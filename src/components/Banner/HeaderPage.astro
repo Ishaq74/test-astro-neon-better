@@ -1,0 +1,81 @@
+---
+import Heading from '../ui/Heading.astro';
+import Text from '../ui/Text.astro';
+interface Props {
+  title: string;
+  subtitle?: string;
+  image?: string;
+  class?: string;
+}
+const { title, subtitle, image, class: className = '' } = Astro.props as Props;
+---
+<section class={`header-page-section ${className}`}>
+  <div class="header-page-container">
+    <div class="header-page-content">
+      <Heading tag="h1" fontSize="h1" fontWeight="700" class="header-page-title">{title}</Heading>
+      {subtitle && <Text as="p" class="header-page-subtitle">{subtitle}</Text>}
+    </div>
+    {image && (
+      <div class="header-page-image-wrap">
+        <img src={image} alt={title} class="header-page-image" />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+.header-page-section {
+  background: var(--theme-surface);
+  padding: 4rem 0 2rem 0;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+}
+.header-page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.header-page-content {
+  flex: 1;
+}
+.header-page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-bottom: 1rem;
+}
+.header-page-subtitle {
+  color: var(--theme-text-secondary);
+  font-size: 1.2rem;
+}
+.header-page-image-wrap {
+  flex-shrink: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  max-width: 320px;
+}
+.header-page-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+@media (max-width: 900px) {
+  .header-page-container {
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .header-page-image-wrap {
+    max-width: 100%;
+  }
+  .header-page-image {
+    height: 140px;
+  }
+}
+</style>

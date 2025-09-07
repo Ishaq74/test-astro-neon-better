@@ -1,0 +1,204 @@
+---
+import { getServerSession } from '@lib/auth-server';
+import Hamburger from '@partials/Hamburger.astro';
+import Navigation from '@navigations/Navigation.astro';
+import ThemeIcon from '@partials/ThemeIcon.astro';
+import Dropdown from '../ui/Dropdown.astro';
+let session = null;
+let user = null;
+try {
+  session = await getServerSession(Astro.request);
+  user = session?.user ?? null;
+} catch {
+  user = null;
+}
+---
+<header>
+  <div class="container">
+    <nav>
+      <a href="/" class="logo">
+        <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="45" stroke="var(--brand-primary)" stroke-width="8" fill="none" />
+          <text x="50" y="62" font-size="40" text-anchor="middle" fill="var(--theme-text)" font-family="var(--font-sans)" font-weight="bold">UI</text>
+        </svg>
+        <span>UI Showcase</span>
+      </a>
+      <div class="actions">
+        <Navigation />
+        <ThemeIcon />
+        <Hamburger />
+        {user ? (
+          <Dropdown label="" class="user-dropdown">
+            <button slot="trigger" class="user-trigger" aria-haspopup="true" aria-expanded="false" tabindex="0">
+              <img src={user.image} alt={user.name || user.email} class="avatar" style="width:32px;height:32px;border-radius:50%;object-fit:cover;" />
+              <span class="user-name">{user.name || user.email}</span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="user-menu">
+              <div class="user-menu-label">Mon compte</div>
+              <a href="/profil" class="user-menu-item">Profil</a>
+              <button type="button" id="desktop-signout" class="user-menu-item">Déconnexion</button>
+            </div>
+          </Dropdown>
+        ) : (
+          <div class="user-actions">
+            <a href="/auth/inscription" class="user-menu-item">Inscription</a>
+            <a href="/auth/connexion" class="user-menu-item">Connexion</a>
+          </div>
+        )}
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const hamburger = document.querySelector('.hamburger') as HTMLButtonElement;
+  const navLinks = document.querySelector('#mobile-nav-links') as HTMLDivElement;
+
+  const closeMenu = () => {
+    hamburger.classList.remove('is-open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    navLinks.classList.remove('is-open');
+    document.body.style.overflow = '';
+  };
+
+  const openMenu = () => {
+    hamburger.classList.add('is-open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    navLinks.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+      const isOpen = hamburger.classList.contains('is-open');
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    // Close menu when a link is clicked
+    navLinks.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).tagName === 'A') {
+        closeMenu();
+      }
+    });
+  }
+</script>
+
+<style>
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: var(--z-index-sticky);
+    padding: var(--space-3) 0;
+    background-color: var(--theme-frosted-glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--theme-frosted-glass-border);
+    transition: var(--transition-normal);
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    color: var(--theme-text);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+  }
+  .logo span {
+    display: none;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .logo span {
+      display: inline;
+    }
+  }
+
+    .user-dropdown {
+    position: relative;
+    margin-left: 1rem;
+  }
+  .user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: var(--theme-surface);
+    color: var(--brand-primary);
+    border-radius: 1.2rem;
+    padding: 0.5rem 1.2rem;
+    font-weight: 600;
+    box-shadow: 0 2px 12px 0 rgba(49,60,94,0.10);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .user-trigger:hover {
+    background: var(--brand-accent);
+    color: var(--brand-primary-foreground);
+  }
+  .user-name {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .user-menu {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    min-width: 220px;
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 32px 0 rgba(49,60,94,0.10);
+    padding: 1rem 0.5rem;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .user-menu-label {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: var(--brand-accent);
+    padding: 0.5rem 1.25rem 0.25rem 1.25rem;
+    border-bottom: 1px solid var(--theme-border);
+  }
+  .user-menu-item {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    background: none;
+    color: var(--theme-text);
+    border: none;
+    text-align: left;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 0.8rem;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+  }
+  .user-menu-item:hover, .user-menu-item:focus {
+    background: var(--brand-primary);
+    color: var(--brand-primary-foreground);
+  }
+</style>

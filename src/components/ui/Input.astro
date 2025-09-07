@@ -1,0 +1,100 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props extends astroHTML.JSX.InputHTMLAttributes {
+  label: string;
+  id: string;
+  error?: string;
+  iconLeft?: string;
+  iconRight?: string;
+}
+
+const { label, id, error, iconLeft, iconRight, class: className, ...rest } = Astro.props;
+const hasError = !!error;
+---
+<div class:list={["input-wrapper", className]}>
+  <label for={id}>{label}</label>
+  <div class="input-container">
+    {iconLeft && <Icon name={iconLeft} class="input-icon left-icon" />}
+    <input
+      id={id}
+      class:list={[
+        "input-field",
+        { "has-error": hasError },
+        { "has-icon-left": !!iconLeft },
+        { "has-icon-right": !!iconRight }
+      ]}
+      aria-invalid={hasError ? 'true' : 'false'}
+      aria-describedby={hasError ? `${id}-error` : undefined}
+      {...rest}
+    />
+    {iconRight && <Icon name={iconRight} class="input-icon right-icon" />}
+  </div>
+  {hasError && <p id={`${id}-error`} class="error-message">{error}</p>}
+</div>
+
+<style>
+  .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+  }
+  label {
+    font-weight: var(--font-weight-medium);
+    color: var(--theme-text);
+  }
+  .input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-field {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--theme-surface);
+    border: var(--border-width-lg) solid var(--theme-border);
+    border-radius: var(--radius-md);
+    color: var(--theme-text);
+    transition: var(--transition-fast);
+  }
+  .input-field:focus {
+    outline: none;
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-primary) 20%, transparent);
+  }
+  .input-field:disabled {
+    background-color: var(--theme-bg);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  .input-field.has-error {
+    border-color: var(--feedback-error);
+  }
+  .input-field.has-error:focus {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--feedback-error) 20%, transparent);
+  }
+  .input-field.has-icon-left {
+    padding-left: var(--space-10);
+  }
+  .input-field.has-icon-right {
+    padding-right: var(--space-10);
+  }
+  .input-icon {
+    position: absolute;
+    color: var(--theme-text-secondary);
+    width: 20px;
+    height: 20px;
+  }
+  .left-icon {
+    left: var(--space-3);
+  }
+  .right-icon {
+    right: var(--space-3);
+  }
+  .error-message {
+    color: var(--feedback-error);
+    font-size: var(--font-size-sm);
+    margin: 0;
+  }
+</style>

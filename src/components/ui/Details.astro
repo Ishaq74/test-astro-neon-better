@@ -1,0 +1,60 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  summary: string;
+  open?: boolean;
+  class?: string;
+}
+const { summary, open = false, class: className } = Astro.props;
+---
+<details class:list={["details-base", className]} open={open}>
+  <summary class="summary-base">
+    <span class="summary-text">{summary}</span>
+    <Icon name="mdi:chevron-down" class="chevron-icon" size={24} />
+  </summary>
+  <div class="details-content">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .details-base {
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--theme-surface);
+    transition: var(--transition-fast);
+    margin-bottom: var(--space-4);
+  }
+  .details-base:hover {
+    border-color: var(--theme-border-hover);
+  }
+  .summary-base {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+    list-style: none; /* Hide default marker */
+  }
+  .summary-base::-webkit-details-marker {
+    display: none; /* Hide default marker for Safari */
+  }
+  .summary-base:focus-visible {
+    outline: var(--border-width-lg) solid var(--brand-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-md);
+  }
+  .chevron-icon {
+    transition: transform var(--transition-normal);
+    color: var(--theme-text-secondary);
+  }
+  .details-base[open] > .summary-base .chevron-icon {
+    transform: rotate(180deg);
+  }
+  .details-content {
+    padding: 0 var(--space-4) var(--space-4);
+    border-top: 1px solid var(--theme-border);
+  }
+</style>

@@ -1,0 +1,343 @@
+/*
+ * ==========================================================================
+ *  ULTIMATE GLOBAL STYLESHEET
+ * ==========================================================================
+ *  - Modern CSS Reset
+ *  - Design System Tokens (Light & Dark Themes)
+ *  - Base Element Styling
+ *  - Utility Classes
+ *  - Accessibility Enhancements
+ * ==========================================================================
+ */
+
+/*
+ * --------------------------------------------------------------------------
+ *  1. DESIGN TOKENS (CSS CUSTOM PROPERTIES)
+ * --------------------------------------------------------------------------
+ */
+
+:root {
+  /* -----------------
+   * A. LIGHT THEME (DEFAULT)
+   * ----------------- */
+  --theme-bg: #f8fafc; /* neutral-50 */
+  --theme-surface: #ffffff; /* white */
+  --theme-text: #0f172a; /* slate-900 */
+  --theme-text-secondary: #64748b; /* slate-500 */
+  --theme-border: #e2e8f0; /* slate-200 */
+  --theme-border-hover: #cbd5e1; /* slate-300 */
+
+  --brand-primary: #ff8800;
+  --brand-primary-hover: #e67a00;
+  --brand-secondary: #313c5e;
+  --brand-accent: #ff0f0f;
+  --brand-accent-hover: #e60d0d;
+
+  --feedback-success: #10b981; /* emerald-500 */
+  --feedback-warning: #f59e0b; /* amber-500 */
+  --feedback-error: #ef4444; /* red-500 */
+
+  /* Frosted Glass Effect */
+  --theme-frosted-glass-bg: rgba(255, 255, 255, 0.6);
+  --theme-frosted-glass-border: rgba(255, 255, 255, 0.2);
+
+  /* -----------------
+   * B. TYPOGRAPHY
+   * ----------------- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  --font-serif: 'Playfair Display', serif;
+  --font-mono: 'Fira Code', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1.125rem; /* 18px */
+  --font-size-lg: 1.25rem;   /* 20px */
+  --font-size-xl: 1.5rem;    /* 24px */
+  --font-size-2xl: 1.875rem; /* 30px */
+  --font-size-3xl: 2.25rem;  /* 36px */
+  --font-size-4xl: 3rem;     /* 48px */
+  --font-size-5xl: 3.75rem;  /* 60px */
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+
+  /* -----------------
+   * C. SPACING & SIZING (8px grid)
+   * ----------------- */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem;  /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem;    /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem;  /* 24px */
+  --space-8: 2rem;    /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem;   /* 48px */
+  --space-16: 4rem;   /* 64px */
+  --space-20: 5rem;   /* 80px */
+
+  /* -----------------
+   * D. BORDERS & RADII
+   * ----------------- */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 2rem;
+  --radius-full: 9999px;
+
+  --border-width: 1px;
+  --border-width-lg: 2px;
+
+  /* -----------------
+   * E. SHADOWS
+   * ----------------- */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+  /* -----------------
+   * F. TRANSITIONS
+   * ----------------- */
+  --transition-fast: all 150ms ease-in-out;
+  --transition-normal: all 300ms ease-in-out;
+  --transition-slow: all 500ms ease-in-out;
+
+  /* -----------------
+   * G. Z-INDEX
+   * ----------------- */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}
+
+/*
+ * --------------------------------------------------------------------------
+ *  2. DARK THEME
+ * --------------------------------------------------------------------------
+ */
+
+html.dark {
+  --theme-bg: #171717; /* neutral-900 */
+  --theme-surface: #262626; /* neutral-800 */
+  --theme-text: #f5f5f5; /* neutral-100 */
+  --theme-text-secondary: #a3a3a3; /* neutral-400 */
+  --theme-border: #404040; /* neutral-700 */
+  --theme-border-hover: #525252; /* neutral-600 */
+
+  /* Keep brand colors vibrant */
+  --brand-primary: #ff8800;
+  --brand-primary-hover: #ff9d26;
+  --brand-secondary: #526193; /* Lighter for contrast */
+  --brand-accent: #ff3d3d; /* Lighter for contrast */
+  --brand-accent-hover: #ff5c5c;
+
+  /* Frosted Glass Effect */
+  --theme-frosted-glass-bg: rgba(38, 38, 38, 0.6);
+  --theme-frosted-glass-border: rgba(64, 64, 64, 0.5);
+
+  /* Adjust shadows for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.15);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.15);
+}
+
+/*
+ * --------------------------------------------------------------------------
+ *  3. MODERN CSS RESET & BASE STYLES
+ * --------------------------------------------------------------------------
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: var(--border-width-lg) solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/*
+ * --------------------------------------------------------------------------
+ *  4. TYPOGRAPHY STYLES
+ * --------------------------------------------------------------------------
+ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--theme-text);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--font-size-4xl); }
+h2 { font-size: var(--font-size-3xl); }
+h3 { font-size: var(--font-size-2xl); }
+h4 { font-size: var(--font-size-xl); }
+h5 { font-size: var(--font-size-lg); }
+h6 { font-size: var(--font-size-base); }
+
+p {
+  margin-bottom: var(--space-4);
+  max-width: 75ch;
+}
+
+a {
+  color: var(--brand-primary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--brand-primary-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+strong, b {
+  font-weight: var(--font-weight-bold);
+}
+
+em, i {
+  font-style: italic;
+}
+
+code {
+  font-family: var(--font-mono);
+  background-color: var(--theme-surface);
+  color: var(--theme-text-secondary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  border: var(--border-width) solid var(--theme-border);
+}
+
+pre {
+  font-family: var(--font-mono);
+  background-color: var(--theme-surface);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  border: var(--border-width) solid var(--theme-border);
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+}
+
+blockquote {
+  border-left: 4px solid var(--brand-primary);
+  padding-left: var(--space-4);
+  margin: var(--space-6) 0;
+  font-style: italic;
+  color: var(--theme-text-secondary);
+}
+
+/*
+ * --------------------------------------------------------------------------
+ *  5. FORM & BUTTON STYLES
+ * --------------------------------------------------------------------------
+ */
+
+/* Base styles for forms are kept, but component-specific styles are now in the components themselves */
+
+
+/*
+ * --------------------------------------------------------------------------
+ *  6. UTILITY CLASSES
+ * --------------------------------------------------------------------------
+ */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.text-gradient {
+  background-image: linear-gradient(45deg, var(--brand-primary), var(--brand-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 100%;
+  background-position: 0%;
+}
+
+.frosted-glass {
+  background-color: var(--theme-frosted-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--theme-frosted-glass-border);
+}

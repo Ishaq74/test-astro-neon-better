@@ -1,0 +1,30 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+interface Props extends HTMLAttributes<'video'> {
+  class?: string;
+}
+const { class: className, ...rest } = Astro.props;
+---
+<div class:list={["video-wrapper", className]}>
+  <video controls {...rest}>
+    <slot>
+      Votre navigateur ne supporte pas l'élément vidéo.
+    </slot>
+  </video>
+</div>
+<style>
+  .video-wrapper {
+    width: 100%;
+    max-width: 480px; /* Default max width */
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--theme-border);
+    margin-bottom: var(--space-4);
+  }
+  .video-wrapper video {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

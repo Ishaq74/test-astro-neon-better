@@ -1,14 +1,34 @@
 {
-  "name": "one",
+  "name": "project",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset",
+    "check:db": "tsx prisma/check-db.ts",
+    "compare:db": "tsx prisma/compare-db.ts",
+    "sync:dev:prod": "npm run compare:db -- --from dev --to prod --force",
+    "sync:prod:dev": "npm run compare:db -- --from prod --to dev --force"
   },
   "dependencies": {
-    "astro": "^5.13.5"
+    "@prisma/client": "^6.15.0",
+    "astro": "^5.13.5",
+    "astro-font": "^1.1.0",
+    "astro-icon": "^1.1.5",
+    "@iconify-json/mdi": "^1.2.3",
+    "better-auth": "^1.3.7",
+    "prisma": "^6.15.0",
+    "typescript": "^5.8.3",
+    "nodemailer": "^7.0.5"
+  },
+    "devDependencies": {
+    "@types/nodemailer": "^7.0.0"
   }
 }

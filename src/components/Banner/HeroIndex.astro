@@ -1,0 +1,217 @@
+---
+import { contentLoader } from '../../content.config';
+import Heading from '../ui/Heading.astro';
+import Text from '../ui/Text.astro';
+import Button from '../ui/Button.astro';
+
+import { Icon } from 'astro-icon/components';
+import DecorLine from '../decor/DecorLine.astro';
+
+const allIdentities = await contentLoader.loadSiteIdentity();
+const siteIdentity = allIdentities.find((s) => s.id === 1);
+---
+<section class="hero-index-section">
+  <div class="hero-index-container">
+    <div class="hero-index-grid">
+      <div class="hero-index-content">
+        <Text as="span" variant="secondary" class="hero-index-label">L'artisane de votre beauté</Text>
+        <Heading tag="h1" fontSize="h1" fontWeight="700" class="hero-index-title">
+          Une Approche
+          <span class="hero-index-title-gradient">Unique</span>
+        </Heading>
+        <Text as="p" class="hero-index-desc">
+          Passionnée par l'art du maquillage et la transmission, je vous accompagne avec bienveillance pour révéler votre beauté naturelle et développer votre confiance.
+        </Text>
+        <div class="hero-index-rating">
+          <div class="hero-index-stars">
+            {[...Array(5)].map((_, i) => <Icon name="mdi:star" class="hero-index-star" />)}
+          </div>
+          <span class="hero-index-rating-label">4.9/5 • 120+ clientes satisfaites</span>
+        </div>
+        <div class="hero-index-ctas">
+          <Button href="/services" variant="primary" size="lg">Découvrir mes services</Button>
+          <Button href="/galerie" variant="secondary" size="lg">Voir la galerie</Button>
+        </div>
+  <DecorLine />
+      </div>
+      <div class="hero-index-image-wrap">
+        <div class="hero-index-image-container">
+          <img
+            src={siteIdentity?.heroImage || '/assets/placeholder.jpg'}
+            alt="Neill Beauty - Maquillage professionnel"
+            class="hero-index-image"
+          />
+          <div class="hero-index-image-gradient"></div>
+        </div>
+        <div class="hero-index-badge">
+          <div class="hero-index-badge-content">
+            <Text as="div" class="hero-index-badge-years">15+</Text>
+            <Text as="div" class="hero-index-badge-label">Années d'expérience</Text>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+.hero-index-section {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  padding-top: 5rem;
+  padding-bottom: 2rem;
+  background: var(--theme-bg);
+}
+.hero-index-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 1.5rem;
+}
+.hero-index-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+.hero-index-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.hero-index-label {
+  color: var(--brand-primary);
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.hero-index-title {
+  font-family: var(--font-family-heading);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--theme-text);
+  margin-bottom: 0.5rem;
+}
+.hero-index-title-gradient {
+  display: block;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  font-size: 3.2rem;
+  font-weight: 800;
+}
+.hero-index-desc {
+  color: var(--theme-text-secondary);
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+.hero-index-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.hero-index-stars {
+  display: flex;
+  gap: 0.2rem;
+}
+.hero-index-star {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--brand-primary);
+  fill: var(--brand-primary);
+}
+.hero-index-rating-label {
+  color: var(--theme-text-secondary);
+  font-size: 1rem;
+}
+.hero-index-ctas {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.hero-index-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 2rem;
+}
+.hero-index-line-left, .hero-index-line-right {
+  height: 2px;
+  width: 3rem;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+  border-radius: 1px;
+}
+.hero-index-line-icon {
+  color: var(--brand-primary);
+  width: 1.2rem;
+  height: 1.2rem;
+}
+.hero-index-image-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-index-image-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2rem;
+  box-shadow: var(--shadow-lg);
+  transition: transform 0.3s;
+}
+.hero-index-image {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+}
+.hero-index-image-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.18), transparent);
+}
+.hero-index-badge {
+  position: absolute;
+  top: -2rem;
+  right: -2rem;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(6px);
+  border-radius: 50%;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 2s infinite alternate;
+}
+.hero-index-badge-content {
+  text-align: center;
+}
+.hero-index-badge-years {
+  font-family: var(--font-family-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--brand-primary);
+}
+.hero-index-badge-label {
+  font-size: 0.9rem;
+  color: var(--theme-text-secondary);
+}
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+@media (max-width: 900px) {
+  .hero-index-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .hero-index-image {
+    height: 320px;
+  }
+}
+</style>

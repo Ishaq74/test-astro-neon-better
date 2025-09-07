@@ -1,0 +1,108 @@
+---
+import { Icon } from 'astro-icon/components';
+import Button from '@ui/Button.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  class?: string;
+}
+
+const { id, title, class: className } = Astro.props;
+---
+
+<dialog id={id} class:list={['dialog', className]}>
+  <div class="dialog-content">
+    <header class="dialog-header">
+      <h2 class="dialog-title">{title}</h2>
+      <form method="dialog">
+        <Button type="submit" variant="ghost" size="sm" class="close-button" aria-label="Fermer">
+          <Icon name="mdi:close" size={24} />
+        </Button>
+      </form>
+    </header>
+    <main class="dialog-body">
+      <slot />
+    </main>
+    <footer class="dialog-footer">
+      <slot name="footer" />
+    </footer>
+  </div>
+</dialog>
+
+<style>
+  .dialog {
+    background-color: var(--theme-surface);
+    color: var(--theme-text);
+    border: 1px solid var(--theme-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: 0;
+    width: min(90vw, 500px);
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    height: fit-content;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  .dialog[open] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  .dialog-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-6);
+    border-bottom: 1px solid var(--theme-border);
+    flex-shrink: 0;
+  }
+
+  .dialog-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+  }
+
+  .close-button {
+    padding: var(--space-1) !important;
+  }
+
+  .dialog-body {
+    padding: var(--space-6);
+    padding-top: var(--space-4);
+    overflow-y: auto;
+  }
+
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid var(--theme-border);
+    background-color: var(--theme-surface-soft);
+    border-bottom-left-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
+    flex-shrink: 0;
+  }
+</style>

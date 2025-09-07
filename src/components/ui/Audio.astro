@@ -1,0 +1,23 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+interface Props extends HTMLAttributes<'audio'> {
+  class?: string;
+}
+const { class: className, ...rest } = Astro.props;
+---
+<div class:list={["audio-wrapper", className]}>
+  <audio controls {...rest}>
+    <slot>
+      Votre navigateur ne supporte pas l'élément audio.
+    </slot>
+  </audio>
+</div>
+<style>
+  .audio-wrapper {
+    margin-bottom: var(--space-4);
+  }
+  .audio-wrapper audio {
+    width: 100%;
+    border-radius: var(--radius-md);
+  }
+</style>

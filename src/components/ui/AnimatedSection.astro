@@ -1,0 +1,98 @@
+---
+interface Props {
+  animation?: 'fade-in' | 'slide-up' | 'slide-left' | 'slide-right' | 'scale-in';
+  delay?: number;
+  threshold?: number;
+  class?: string;
+  rootMargin?: string;
+}
+const {
+  animation = 'fade-in',
+  delay = 0,
+  threshold = 0.1,
+  rootMargin = '0px',
+  class: className = ''
+} = Astro.props;
+function getInitialClass() {
+  switch (animation) {
+    case 'slide-up':
+      return 'as-slide-up';
+    case 'slide-left':
+      return 'as-slide-left';
+    case 'slide-right':
+      return 'as-slide-right';
+    case 'scale-in':
+      return 'as-scale-in';
+    default:
+      return 'as-fade-in';
+  }
+}
+---
+<div
+  class={`as-animated-section ${getInitialClass()} ${className}`}
+  style={`animation-delay: ${delay}ms;`}
+>
+  <slot />
+</div>
+<style>
+.as-animated-section {
+  opacity: 0;
+  transform: none;
+  will-change: opacity, transform;
+  animation-duration: 0.8s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(.4,0,.2,1);
+}
+.as-fade-in {
+  animation-name: as-fade-in-anim;
+}
+.as-slide-up {
+  animation-name: as-slide-up-anim;
+}
+.as-slide-left {
+  animation-name: as-slide-left-anim;
+}
+.as-slide-right {
+  animation-name: as-slide-right-anim;
+}
+.as-scale-in {
+  animation-name: as-scale-in-anim;
+}
+.as-animated-section {
+  /* fallback: always visible if no JS */
+  animation-play-state: paused;
+}
+.as-animated-section:target,
+.as-animated-section:focus-within,
+.as-animated-section:has(:not([tabindex="-1"])) {
+  animation-play-state: running;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .as-animated-section {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+@keyframes as-fade-in-anim {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes as-slide-up-anim {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes as-slide-left-anim {
+  from { opacity: 0; transform: translateX(32px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes as-slide-right-anim {
+  from { opacity: 0; transform: translateX(-32px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes as-scale-in-anim {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+</style>

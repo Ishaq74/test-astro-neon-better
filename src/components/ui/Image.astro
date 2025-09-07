@@ -1,0 +1,57 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'img'> {
+  src: string;
+  alt: string;
+  variant?: 'default' | 'rounded' | 'circle';
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  src,
+  alt,
+  variant = 'default',
+  width,
+  height,
+  loading = 'lazy',
+  class: className,
+  ...rest
+} = Astro.props;
+
+const variantClasses = {
+  default: 'img-default',
+  rounded: 'img-rounded',
+  circle: 'img-circle',
+}
+---
+<img
+  src={src}
+  alt={alt}
+  width={width}
+  height={height}
+  loading={loading}
+  decoding="async"
+  class:list={["image-base", variantClasses[variant], className]}
+  {...rest}
+/>
+
+<style>
+  .image-base {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  .img-default {
+    border-radius: 0;
+  }
+  .img-rounded {
+    border-radius: var(--radius-lg);
+  }
+  .img-circle {
+    border-radius: var(--radius-full);
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+type ListItem = string | { text: string; children?: ListItem[] };
+
+interface Props {
+  type?: 'ordered' | 'unordered';
+  items: ListItem[];
+  class?: string;
+}
+
+const { type = 'unordered', items, class: className } = Astro.props;
+const Tag = type === 'ordered' ? 'ol' : 'ul';
+---
+<Tag class:list={["list-base", className]}>
+  {items.map(item => (
+    <li>
+      {typeof item === 'string' ? item : item.text}
+      {typeof item !== 'string' && item.children && (
+        <Astro.self type={type} items={item.children} />
+      )}
+    </li>
+  ))}
+</Tag>
+
+<style>
+  .list-base {
+    padding-left: var(--space-6);
+    margin-bottom: var(--space-4);
+  }
+  .list-base li {
+    margin-bottom: var(--space-2);
+  }
+  .list-base .list-base {
+    margin-top: var(--space-2);
+  }
+</style>

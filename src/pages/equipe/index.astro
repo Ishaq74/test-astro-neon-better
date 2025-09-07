@@ -1,0 +1,13 @@
+---
+import Layout from "@layouts/Layout.astro";
+import QueryLoop from "@components/QueryLoop.astro";
+import Section from "@components/ui/Section.astro";
+
+
+---
+<Layout title="Équipe" description="Découvrez notre équipe de maquilleurs professionnels à Annecy." lang="fr">
+  <Section>
+    <h1>Notre équipe</h1>
+    <QueryLoop collection="team" active={true} columns={3} gap={6} />
+  </Section>
+</Layout>

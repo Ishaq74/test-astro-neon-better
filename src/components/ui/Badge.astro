@@ -1,0 +1,65 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'default';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+const { variant = 'default', size = 'md', class: className } = Astro.props;
+const base = 'badge inline-block rounded font-semibold transition-colors';
+const variants = {
+  primary: 'badge-primary',
+  secondary: 'badge-secondary',
+  default: 'badge-default',
+};
+const sizes = {
+  sm: 'badge-sm',
+  md: 'badge-md',
+  lg: 'badge-lg',
+};
+---
+<span class:list={[base, variants[variant], sizes[size], className]}>
+  <slot />
+</span>
+
+<style>
+  .badge {
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    padding: var(--space-2) var(--space-4);
+    background: var(--theme-surface);
+    color: var(--theme-text-secondary);
+    border: var(--border-width) solid var(--theme-border);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-fast);
+    display: inline-block;
+    line-height: var(--line-height-tight);
+  }
+  .badge-primary {
+    background: var(--brand-primary);
+    color: #fff;
+    border-color: var(--brand-primary-hover);
+  }
+  .badge-secondary {
+    background: var(--brand-secondary);
+    color: #fff;
+    border-color: var(--brand-secondary);
+  }
+  .badge-default {
+    background: var(--theme-surface);
+    color: var(--theme-text-secondary);
+    border-color: var(--theme-border);
+  }
+  .badge-sm {
+    font-size: var(--font-size-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+  .badge-md {
+    font-size: var(--font-size-sm);
+    padding: var(--space-2) var(--space-4);
+  }
+  .badge-lg {
+    font-size: var(--font-size-base);
+    padding: var(--space-3) var(--space-6);
+  }
+</style>

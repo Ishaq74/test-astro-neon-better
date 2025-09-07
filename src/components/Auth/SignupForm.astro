@@ -1,0 +1,150 @@
+---
+import { authClient } from '@lib/auth-client';
+import Input from '@ui/Input.astro';
+import Button from '@ui/Button.astro';
+import Card from '@ui/Card.astro';
+import Heading from '@ui/Heading.astro';
+import Text from '@ui/Text.astro';
+---
+
+<Card class="w-full max-w-md mx-auto">
+  <form id="signup-form" autocomplete="on" novalidate>
+    <Heading tag="h1" fontSize="h2" fontWeight="700" align="center">Inscription</Heading>
+    <Text as="p" align="center" class="mb-4">Créez votre compte</Text>
+    <Input id="name" name="name" label="Nom" required autofocus class="mb-4" />
+    <Input id="email" name="email" type="email" label="Email" required class="mb-4" />
+    <Input id="password" name="password" type="password" label="Mot de passe" required class="mb-4" />
+    <Input id="confirmPassword" name="confirmPassword" type="password" label="Confirmez le mot de passe" required class="mb-4" />
+    <div id="signup-error" class="mb-4" style="display:none"></div>
+    <Button id="signup-submit" type="submit" variant="primary" size="lg" class="w-full">S'inscrire</Button>
+    <div class="mt-4 text-center">
+      <a href="/auth/connexion" class="text-sm text-primary hover:underline">Déjà un compte ? Connectez-vous</a>
+    </div>
+  </form>
+</Card>
+
+<script type="module">
+import { authClient } from '../../lib/auth-client';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('signup-form');
+  let errorEl = document.getElementById('signup-error');
+
+  if (!form) return;
+
+  const getInput = (name) => {
+    const el = form.querySelector(`input[name="${name}"]`);
+    if (el) return el;
+    return Array.from(form.querySelectorAll('input'))
+      .find(i => i.getAttribute('name') === name) || null;
+  };
+
+  const nameInput = getInput('name');
+  const emailInput = getInput('email');
+  const passwordInput = getInput('password');
+  const confirmPasswordInput = getInput('confirmPassword');
+
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const btnText = document.getElementById('signup-btn-text');
+  const loader = document.getElementById('signup-loader');
+
+  const showError = (msg) => {
+    console.log('Erreur affichée:', msg);
+    if (!errorEl) return;
+    errorEl.textContent = msg;
+    errorEl.classList.remove('hidden');
+    errorEl.style.display = 'block';
+  };
+
+  const clearError = () => {
+    console.log('Erreur effacée');
+    if (!errorEl) return;
+    errorEl.textContent = '';
+    errorEl.classList.add('hidden');
+    errorEl.style.display = 'none';
+  };
+
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isStrongPassword = (pwd) => /^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(pwd);
+
+  const setLoading = (loading) => {
+    console.log('Chargement:', loading);
+    if (submitBtn) submitBtn.disabled = loading;
+    if (btnText) btnText.style.display = loading ? 'none' : '';
+    if (loader) loader.style.display = loading ? 'inline-block' : 'none';
+  };
+
+  if (passwordInput && confirmPasswordInput) {
+    const live = () => {
+      if (!confirmPasswordInput.value) {
+        clearError();
+        return;
+      }
+      if (passwordInput.value !== confirmPasswordInput.value) {
+        showError('Les mots de passe ne correspondent pas.');
+      } else {
+        clearError();
+      }
+    };
+    passwordInput.addEventListener('input', live);
+    confirmPasswordInput.addEventListener('input', live);
+  }
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    clearError();
+
+    const fd = new FormData(form);
+    const name = String(fd.get('name') || '').trim();
+    const email = String(fd.get('email') || '').trim();
+    const password = String(fd.get('password') || '');
+    const confirmPassword = String(fd.get('confirmPassword') || '');
+
+    console.log('Soumission du formulaire:', { name, email, password, confirmPassword });
+
+    if (!name || !email || !password || !confirmPassword) {
+      showError('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+    if (!isValidEmail(email)) {
+      showError('Adresse email invalide.');
+      emailInput?.focus();
+      return;
+    }
+    if (password !== confirmPassword) {
+      showError('Les mots de passe ne correspondent pas.');
+      confirmPasswordInput?.focus();
+      return;
+    }
+    if (!isStrongPassword(password)) {
+      showError('Mot de passe trop faible. Au moins 8 caractères, une lettre et un chiffre.');
+      passwordInput?.focus();
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await authClient.signUp.email({
+        name,
+        email,
+        password,
+        callbackURL: '/',
+      });
+
+      console.log('Résultat inscription:', res);
+
+      if (res?.error) {
+        showError(res.error?.message || 'Erreur lors de l’inscription.');
+        setLoading(false);
+        return;
+      }
+
+  window.location.href = '/profil';
+    } catch (err) {
+      console.error('Erreur inattendue:', err);
+      showError('Une erreur inattendue est survenue. Réessayez plus tard.');
+      setLoading(false);
+    }
+  });
+});
+</script>

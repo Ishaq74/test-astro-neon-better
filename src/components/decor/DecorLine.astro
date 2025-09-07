@@ -1,0 +1,61 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<div class="decor-line">
+  <div class="decor-line-left"></div>
+  <Icon name="mdi:star" class="decor-line-icon decor-line-star-rotate" />
+  <div class="decor-line-right"></div>
+</div>
+
+<style>
+.decor-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 2rem;
+  animation: decorLineFadeIn 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.decor-line-left, .decor-line-right {
+  height: 2px;
+  width: 3rem;
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+}
+.decor-line-left::after, .decor-line-right::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 100%;
+  background: inherit;
+  animation: decorLineGrow 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.decor-line-icon {
+  color: var(--brand-primary);
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.decor-line-star-rotate {
+  animation: decorStarRotate 4s cubic-bezier(0.77,0,0.18,1) infinite alternate;
+}
+
+@keyframes decorStarRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes decorLineGrow {
+  from { width: 0; opacity: 0; }
+  to { width: 100%; opacity: 1; }
+}
+@keyframes decorStarPop {
+  0% { transform: scale(0.2) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes decorLineFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

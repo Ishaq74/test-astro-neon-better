@@ -1,0 +1,11 @@
+---
+import Layout from "@layouts/Layout.astro";
+import QueryLoop from "@components/QueryLoop.astro";
+import Section from "@components/ui/Section.astro";
+---
+<Layout title="Formations" description="Découvrez nos formations de maquillage à Annecy." lang="fr">
+  <Section>
+    <h1>Formations</h1>
+    <QueryLoop collection="formations" columns={2} gap={6} />
+  </Section>
+</Layout>

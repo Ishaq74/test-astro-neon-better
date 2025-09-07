@@ -1,0 +1,214 @@
+---
+import Card from "@ui/Card.astro";
+import Badge from "@ui/Badge.astro";
+import { Icon } from "astro-icon/components";
+import Avatar from "@ui/Avatar.astro";
+
+// Fonction pour extraire les initiales du nom d'utilisateur
+function getInitials(name: string): string {
+  if (!name) return "??";
+  return name
+    .split(' ')
+    .map((part: string) => part.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join('');
+}
+
+// Prépare les données pour l'affichage
+const initiales = getInitials(Astro.props.entry.utilisateur);
+
+// Détermine le type d'avis pour l'affichage du badge
+let avisType = "";
+let avisVariant: "default" | "primary" | "secondary" = "default";
+if (Astro.props.entry.global === 1) {
+  avisType = "Général";
+  avisVariant = "default";
+} else if (Astro.props.entry.servicesGlobal === 1 || Astro.props.entry.serviceId) {
+  avisType = Astro.props.entry.servicesGlobal === 1 ? "Services" : "Service spécifique";
+  avisVariant = "primary";
+} else if (Astro.props.entry.formationsGlobal === 1 || Astro.props.entry.formationId) {
+  avisType = Astro.props.entry.formationsGlobal === 1 ? "Formations" : "Formation spécifique";
+  avisVariant = "secondary";
+}
+---
+
+<Card class="avis-card">
+  <div class="avis-card-content">
+    <!-- Entête de l'avis avec avatar et note -->
+  <div class="avis-card-header-row">
+  <div class="avis-card-user-block">
+        <!-- Avatar avec fallback pour les initiales -->
+  <Avatar size="md" fallback={initiales} class="avis-card-avatar" />
+        
+        <div class="avis-card-user-info">
+          <h3 class="avis-card-user-name">{Astro.props.entry.utilisateur}</h3>
+          {avisType && (
+            <Badge variant={avisVariant} size="sm" class="avis-card-type-badge">{avisType}</Badge>
+          )}
+        </div>
+      </div>
+      
+      <!-- Note avec étoiles -->
+      <div class="avis-card-rating-row">
+        <div class="avis-card-rating-stars">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="currentColor" 
+              class={`avis-card-star${i < Astro.props.entry.note ? ' active' : ''}`}
+              aria-hidden="true"
+            >
+              <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+            </svg>
+          ))}
+        </div>
+        <span class="avis-card-rating-value">{Astro.props.entry.note}/5</span>
+      </div>
+    </div>
+    
+    <!-- Corps du commentaire -->
+    {Astro.props.entry.commentaire && (
+      <div class="avis-card-comment-block">
+        <p class="avis-card-comment-text">
+          <Icon name="mdi:format-quote-open" class="avis-card-quote-icon avis-card-quote-open" />
+          <span class="avis-card-comment-content">{Astro.props.entry.commentaire}</span>
+          <Icon name="mdi:format-quote-close" class="avis-card-quote-icon avis-card-quote-close" />
+        </p>
+      </div>
+    )}
+    
+    <!-- Métadonnées - Lié à un service ou formation spécifique -->
+    {(Astro.props.entry.service || Astro.props.entry.formation) && (
+      <div class="avis-card-meta-row">
+        <Icon name="mdi:link" class="avis-card-meta-link-icon" />
+        <span class="avis-card-meta-label">Avis pour :</span>
+        <a 
+          href={Astro.props.entry.service 
+            ? `/services/${Astro.props.entry.service.slug}` 
+            : `/formations/${Astro.props.entry.formation.slug}`}
+          class="avis-card-meta-link"
+        >
+          {Astro.props.entry.service 
+            ? Astro.props.entry.service.nom 
+            : Astro.props.entry.formation.title || Astro.props.entry.formation.titre}
+        </a>
+      </div>
+    )}
+<style>
+  .avis-card {
+    background: var(--theme-card);
+    color: var(--theme-card-foreground);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+    transition: box-shadow 0.2s;
+    overflow: hidden;
+  }
+  .avis-card-content {}
+  .avis-card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-4);
+  }
+  .avis-card-user-block {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .avis-card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--theme-muted);
+  }
+  .avis-card-user-info {}
+  .avis-card-user-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--theme-foreground);
+  }
+  .avis-card-type-badge {
+    margin-top: var(--space-1);
+  }
+  .avis-card-rating-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--theme-primary-50);
+    padding: 0 var(--space-2);
+    border-radius: var(--radius-md);
+  }
+  .avis-card-rating-stars {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .avis-card-star {
+    width: 16px;
+    height: 16px;
+    color: var(--theme-star-muted);
+    transition: color 0.2s;
+  }
+  .avis-card-star.active {
+    color: var(--theme-star);
+  }
+  .avis-card-rating-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--theme-foreground);
+    margin-left: var(--space-1);
+  }
+  .avis-card-comment-block {
+    color: var(--theme-muted-foreground);
+    margin-bottom: var(--space-2);
+  }
+  .avis-card-comment-text {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    line-height: 1.5;
+    position: relative;
+  }
+  .avis-card-quote-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--theme-primary-30);
+  }
+  .avis-card-quote-open {
+    margin-right: var(--space-1);
+  }
+  .avis-card-quote-close {
+    margin-left: var(--space-1);
+  }
+  .avis-card-comment-content {
+    padding: 0 var(--space-2);
+  }
+  .avis-card-meta-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.95rem;
+    color: var(--theme-muted-foreground);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--theme-border);
+  }
+  .avis-card-meta-link-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--theme-muted-foreground);
+    margin-right: var(--space-1);
+  }
+  .avis-card-meta-label {
+    color: var(--theme-muted-foreground);
+  }
+  .avis-card-meta-link {
+    color: var(--theme-primary);
+    text-decoration: underline;
+    margin-left: var(--space-1);
+  }
+</style>
+  </div>
+</Card>

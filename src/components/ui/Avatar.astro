@@ -1,0 +1,55 @@
+---
+interface Props {
+  src?: string;
+  alt?: string;
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  fallback?: string;
+}
+const { src, alt = '', size = 'md', class: className, fallback = '' } = Astro.props;
+const sizes = {
+  sm: 'avatar-sm',
+  md: 'avatar-md',
+  lg: 'avatar-lg',
+};
+---
+{src ? (
+  <img src={src} alt={alt} class:list={[sizes[size], 'avatar', className]} />
+) : (
+  <div class:list={[sizes[size], 'avatar avatar-fallback', className]}>
+    {fallback}
+  </div>
+)}
+
+<style>
+  .avatar {
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    background: var(--theme-surface);
+    border: var(--border-width) solid var(--theme-border);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-fast);
+    display: inline-block;
+  }
+  .avatar-fallback {
+    background: var(--theme-border);
+    color: var(--theme-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+  }
+  .avatar-sm {
+    width: 2rem;
+    height: 2rem;
+  }
+  .avatar-md {
+    width: 3rem;
+    height: 3rem;
+  }
+  .avatar-lg {
+    width: 5rem;
+    height: 5rem;
+  }
+</style>

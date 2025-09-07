@@ -1,0 +1,117 @@
+---
+interface Props {
+  as?: 'section' | 'div' | 'header' | 'footer' | 'main' | 'aside';
+  container?: boolean;
+  layout?: 'flex' | 'grid';
+  
+  // Spacing
+  padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  
+  // Flex & Grid props
+  gap?: string;
+  cols?: string;
+  justify?: 'start' | 'center' | 'end' | 'space-between' | 'space-around';
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  direction?: 'row' | 'column' | 'row-reverse' | 'column-reverse';
+
+  // Background props
+  bgColor?: string;
+  bgImage?: string;
+  bgOpacity?: number;
+  bgSize?: string;
+  bgPosition?: string;
+
+  class?: string;
+  id?: string;
+}
+
+const {
+  as: Tag = 'section',
+  container = false,
+  layout,
+  padding = 'sm',
+  gap,
+  cols,
+  justify,
+  align,
+  direction,
+  bgColor,
+  bgImage,
+  bgOpacity = 1,
+  bgSize = 'cover',
+  bgPosition = 'center',
+  class: className,
+  id,
+} = Astro.props as Props;
+
+const wrapperStyles: string[] = [];
+const bgStyles: string[] = [];
+
+// Spacing
+const paddingMap = {
+  none: '0',
+  sm: 'var(--space-4) 0',
+  md: 'var(--space-8) 0',
+  lg: 'var(--space-12) 0',
+  xl: 'var(--space-16) 0',
+};
+wrapperStyles.push(`padding: ${paddingMap[padding as keyof typeof paddingMap]}`);
+
+// Background
+if (bgColor) {
+  const color = bgColor.startsWith('#') || bgColor.startsWith('rgb') ? bgColor : `var(--theme-${bgColor})`;
+  bgStyles.push(`background-color: ${color}`);
+}
+if (bgImage) {
+  bgStyles.push(`background-image: url(${bgImage})`);
+  bgStyles.push(`background-size: ${bgSize}`);
+  bgStyles.push(`background-position: ${bgPosition}`);
+  bgStyles.push(`background-repeat: no-repeat;`);
+}
+if (bgOpacity < 1) {
+  bgStyles.push(`opacity: ${bgOpacity}`);
+}
+
+const contentStyles: string[] = [];
+if (layout) {
+  contentStyles.push(`display: ${layout}`);
+  if (gap) contentStyles.push(`gap: ${gap}`);
+  if (justify) contentStyles.push(`justify-content: ${justify}`);
+  if (align) contentStyles.push(`align-items: ${align}`);
+  if (layout === 'flex' && direction) contentStyles.push(`flex-direction: ${direction}`);
+  if (layout === 'grid' && cols) {
+    const gridCols = /^\d+$/.test(cols) ? `repeat(${cols}, 1fr)` : cols;
+    contentStyles.push(`grid-template-columns: ${gridCols}`);
+  }
+}
+---
+<Tag id={id} class:list={["section-wrapper", className]}>
+  {(bgImage || bgColor) && <div class="section-bg" style={bgStyles.join('; ')}></div>}
+  <div 
+    class:list={["section-content", { "container": container }]}
+    style={contentStyles.join('; ')}
+  >
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .section-wrapper {
+    position: relative;
+    width: 100%;
+    padding: var(--space-4);
+  }
+  .section-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  .section-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+</style>
